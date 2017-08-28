@@ -1,17 +1,56 @@
-Skeleton for C++ header-only libraries that can be included into other C++ projects. This repository itself is a helper library. To use it for a specific project, edit filenames and tests accordingly.
+Gzip C++ lib fro gzip compression and decompression. Extracted from [mapnik-vector-tile](https://github.com/mapbox/mapnik-vector-tile) for light-weight modularity.
 
-[![Build Status](https://travis-ci.org/mapbox/hpp-skel.svg?branch=master)](https://travis-ci.org/mapbox/hpp-skel)
+[![Build Status](https://travis-ci.com/mapbox/gzip-hpp.svg?token=XUVmCBVxtg4Px9i4scss&branch=master)](https://travis-ci.com/mapbox/gzip-hpp)
 
 ## Usage
-
 ```cpp
-#include <include/hello_world.hpp>
+#include <gzip.hpp>
 
-using namespace hello_world;
+// You can pass in a std::string
+std::string data = "hello";
 
-// exclaim a string
-std::string value = exclaim("hello");
-std::clog << value; // => hello!
+// compress returns a std::string
+std::string compressed_data = gzip::compress(data);
+
+// decompress returns a std::string and decodes both zlib and gzip
+std::string decompressed_data = gzip::decompress(compressed_data);
+
+// You can also pass in a pointer of an immutable character sequence (aka a string in C)
+std::string compressed_data = gzip::compress(tile->data());
+```
+#### Compress
+```cpp
+// Compress using std::string
+// Optionally include compression level and strategy
+std::string data = "hello";
+int level = Z_DEFAULT_COMPRESSION; // Z_DEFAULT_COMPRESSION is the default if no arg is passed
+int strategy = Z_DEFAULT_STRATEGY; // Z_DEFAULT_STRATEGY is the defaul if no arg is passed
+
+std::string compressed_data = gzip::compress(data, level, strategy);
+
+// Compress using pointer
+// Optionally include data size, compression level and strategy
+std::size_t size; // No default value, but what happens when not passed??
+int level = Z_DEFAULT_COMPRESSION; // Z_DEFAULT_COMPRESSION is the default if no arg is passed
+int strategy = Z_DEFAULT_STRATEGY; // Z_DEFAULT_STRATEGY is the defaul if no arg is passed
+
+std::string compressed_data = gzip::compress(tile->data(), size, level, strategy);
+```
+#### Decompress
+```cpp
+// Decompress using std::string
+// No args other than the std:string
+std::string data = "hello";
+std::string compressed_data = gzip::compress(data);
+
+std::string decompressed_data = gzip::decompress(compressed_data);
+
+// Decompress using pointer
+// Optionally include data size
+const char * data = node::Buffer::Data(obj);
+std::size_t size = node::Buffer::Length(obj); // Anything we should say about this?
+
+std::string decompressed_data = gzip::decompress(data, size);
 ```
 
 ## Test
