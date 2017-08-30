@@ -24,6 +24,12 @@ TEST_CASE("successful compress - pointer") {
     REQUIRE(value.size() > data.size());
 }
 
+TEST_CASE("failed compress - pointer with size") {
+    std::string data = "hello";
+    const char * pointer = data.data();
+    CHECK_THROWS(gzip::compress(pointer));
+}
+
 TEST_CASE("successful decompress") {
     std::string data = "hello";
     std::string compressed_data = gzip::compress(data);
