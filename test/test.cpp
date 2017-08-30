@@ -38,6 +38,15 @@ TEST_CASE("successful decompress") {
     REQUIRE(value.size() == data.size());
 }
 
+TEST_CASE("successful decompress - pointer") {
+    std::string data = "hello";
+    const char * pointer = data.data();
+    std::string compressed_data = gzip::compress(pointer, data.size());
+    std::string value = gzip::decompress(compressed_data);
+
+    REQUIRE(value.size() == data.size());
+}
+
 TEST_CASE("invalid decompression")
 {
     std::string data("this is a string that should be compressed data");
