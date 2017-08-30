@@ -1,6 +1,6 @@
 Gzip C++ lib for gzip compression and decompression. Extracted from [mapnik-vector-tile](https://github.com/mapbox/mapnik-vector-tile) for light-weight modularity.
 
-[![Build Status](https://travis-ci.com/mapbox/gzip-hpp.svg?branch=master)](https://travis-ci.com/mapbox/gzip-hpp)
+[![Build Status](https://travis-ci.org/mapbox/gzip-hpp.svg?branch=master)](https://travis-ci.com/mapbox/gzip-hpp)
 
 ## Usage
 ```cpp
