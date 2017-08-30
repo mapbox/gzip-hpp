@@ -5,7 +5,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED on)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/mason.cmake)
 
+option(WERROR "Add -Werror flag to build (turns warnings into errors)" ON)
+
+# Note: -D_GLIBCXX_USE_CXX11_ABI=0 is needed to support mason packages that are precompiled libs
+# Currently we only depend on a header only library, but this will help avoid issues when more libs are added via mason
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Wsign-compare -Wconversion -Wshadow")
+
+if (WERROR)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+endif()
 
 # mason_use is a mason function within the mason.cmake file and provides ready-to-go vars, like "STATIC_LIBS" and "INCLUDE_DIRS"
 mason_use(catch VERSION 1.9.6 HEADER_ONLY)
