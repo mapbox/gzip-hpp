@@ -84,21 +84,13 @@ BUILDTYPE=Release make
 BUILDTYPE=Release make test
 ```
 
-## Publishing
-
-We recommend publishing header files to [Mason](https://github.com/mapbox/mason), the C++ packaging manager. Binaries can be downloaded by project name and version number. In order to publish to Mason you must request the publish via a Pull Request to the [`scripts/` directory](https://github.com/mapbox/mason/tree/master/scripts) with your project materials.
-
-Mason packages can be downloaded to your project by using the `mason install` command. This is best set up in a Makefile ([example](https://github.com/mapbox/geometry.hpp/blob/23b7fe66b11a4b7830c797817efe19660806d851/Makefile#L10)).
-
-Of course, you can always copy and paste this repo into your vendor path for your project. :scissors:
-
 ## Versioning
 
-This library is semantically versioned using the /include/hello_world/version.cpp file. This defines a number of macros that can be used to check the current major, minor, or patch versions, as well as the full version string.
+This library is semantically versioned using the /include/gzip/version.cpp file. This defines a number of macros that can be used to check the current major, minor, or patch versions, as well as the full version string.
 
-Here's how a downstream client would check for a particular version to use specific API methods
+Here's how you can check for a particular version to use specific API methods
 ```cpp
-#if HELLOWORLD_VERSION_MAJOR > 2
+#if GZIP_VERSION_MAJOR > 2
 // use version 2 api
 #else
 // use older verion apis
@@ -107,13 +99,13 @@ Here's how a downstream client would check for a particular version to use speci
 
 Here's how to check the version string
 ```cpp
-std::cout << "version: " << HELLOWORLD_VERSION_STRING << "/n";
+std::cout << "version: " << GZIP_VERSION_STRING << "/n";
 // => version: 0.2.0
 ```
 
 And lastly, mathematically checking for a specific version:
 ```cpp
-#if HELLOWORLD_VERSION_CODE > 20001
+#if GZIP_VERSION_CODE > 20001
 // use feature provided in v2.0.1
 #endif
 ```
