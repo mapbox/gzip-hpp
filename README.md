@@ -1,4 +1,4 @@
-Gzip C++ lib fro gzip compression and decompression. Extracted from [mapnik-vector-tile](https://github.com/mapbox/mapnik-vector-tile) for light-weight modularity.
+Gzip C++ lib for gzip compression and decompression. Extracted from [mapnik-vector-tile](https://github.com/mapbox/mapnik-vector-tile) for light-weight modularity.
 
 [![Build Status](https://travis-ci.com/mapbox/gzip-hpp.svg?token=XUVmCBVxtg4Px9i4scss&branch=master)](https://travis-ci.com/mapbox/gzip-hpp)
 
@@ -9,14 +9,28 @@ Gzip C++ lib fro gzip compression and decompression. Extracted from [mapnik-vect
 // You can pass in a std::string
 std::string data = "hello";
 
-// compress returns a std::string
+// Check if compressed, can check both gzip and zlib
+// Accepts either "std::string" or "const char *"
+bool c = gzip::is_compressed(data); // false
+
+// Compress returns a std::string
 std::string compressed_data = gzip::compress(data);
 
-// decompress returns a std::string and decodes both zlib and gzip
+// Decompress returns a std::string and decodes both zlib and gzip
 std::string decompressed_data = gzip::decompress(compressed_data);
 
-// You can also pass in a pointer of an immutable character sequence (aka a string in C)
-std::string compressed_data = gzip::compress(tile->data());
+// Other input options: You can also pass in a pointer of an immutable character sequence (aka a string in C)
+// If using a pointer, be sure to include the size parameter
+std::string data = "hello";
+const char * pointer = data.data();
+std::string value = gzip::compress(pointer, data.size());
+
+// Or like so
+std::string compressed_data = gzip::compress(tile->data(), tile->data.size());
+
+// Or like so
+std::string value = gzip::compress(node::Buffer::Data(obj), node::Buffer::Length(obj));
+
 ```
 #### Compress
 ```cpp
@@ -48,9 +62,10 @@ std::string decompressed_data = gzip::decompress(compressed_data);
 // Decompress using pointer
 // Optionally include data size
 const char * data = node::Buffer::Data(obj);
-std::size_t size = node::Buffer::Length(obj); // Anything we should say about this?
+std::size_t size = node::Buffer::Length(obj);
 
 std::string decompressed_data = gzip::decompress(data, size);
+
 ```
 
 ## Test

@@ -5,15 +5,21 @@
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 
-// static void test_version() {
-//     std::clog << "test_version ... ";
-//     assert(HELLOWORLD_VERSION_STRING == "1.0.0");
-//     std::clog << "success!\n";
-// }
+TEST_CASE("test version") {
+    REQUIRE(GZIP_VERSION_STRING == std::string("1.0.0"));
+}
 
-TEST_CASE("successful compress") {
+TEST_CASE("successful compress - string") {
     std::string data = "hello";
     std::string value = gzip::compress(data);
+
+    REQUIRE(value.size() > data.size());
+}
+
+TEST_CASE("successful compress - pointer") {
+    std::string data = "hello";
+    const char * pointer = data.data();
+    std::string value = gzip::compress(pointer, data.size());
 
     REQUIRE(value.size() > data.size());
 }
