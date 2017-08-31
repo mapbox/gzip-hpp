@@ -19,11 +19,21 @@ std::string decompress(const char * data, std::size_t size) {
     inflate_s.next_in = Z_NULL;
     inflateInit2(&inflate_s, 32 + 15);
     inflate_s.next_in = (Bytef *)data;
-    inflate_s.avail_in = size;
+
+#ifdef DEBUG
+    // Verify if size input will fit into unsigned int, type used for zlib's avail_in
+    std::uint64_t size_64 = size * 2;     
+    if (size_64 > std::numeric_limits<unsigned int>::max()) {
+        throw std::runtime_error("size arg is too large to fit into unsigned int type x2");
+    }
+#endif    
+    inflate_s.avail_in = static_cast<unsigned int>(size);
     size_t length = 0;
     do {
         output.resize(length + 2 * size);
-        inflate_s.avail_out = 2 * size;
+        //std::uint64_t size_64 = size * 2; 
+        //inflate_s.avail_out = static_cast<unsigned int>(size_64);
+        inflate_s.avail_out = 2 * static_cast<unsigned int>(size);
         inflate_s.next_out = (Bytef *)(output.data() + length);
         int ret = inflate(&inflate_s, Z_FINISH);
         if (ret != Z_STREAM_END && ret != Z_OK && ret != Z_BUF_ERROR)

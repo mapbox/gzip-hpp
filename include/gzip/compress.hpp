@@ -13,11 +13,6 @@ std::string compress (const char * data,
                       int level=Z_DEFAULT_COMPRESSION, 
                       int strategy=Z_DEFAULT_STRATEGY) {
 
-    // Verify if size input will fit into unsigned int, type used for zlib's avail_in
-    if (size > std::numeric_limits<unsigned int>::max()) {
-        throw std::runtime_error("size arg is too large to fit into unsigned int type");
-    }
-
     std::string output;
     z_stream deflate_s;
 
@@ -34,13 +29,22 @@ std::string compress (const char * data,
         throw std::runtime_error("deflate init failed");
     }
     deflate_s.next_in = (Bytef *)data;
-    deflate_s.avail_in = size; // implicit conversion happening, potentially long, but expecting int
-    std::clog << deflate_s.avail_in << " " << size << "\n";
+    
+#ifdef DEBUG
+    // Verify if size input will fit into unsigned int, type used for zlib's avail_in
+    if (size > std::numeric_limits<unsigned int>::max()) {
+        throw std::runtime_error("size arg is too large to fit into unsigned int type");
+    }
+#endif    
+    deflate_s.avail_in = static_cast<unsigned int>(size);
+
     size_t length = 0;
     do {
         size_t increase = size / 2 + 1024;
         output.resize(length + increase);
-        deflate_s.avail_out = increase;
+        // There is no way we see that "increase" would not fit in an unsigned int,
+        // hence we use static cast here to avoid -Wshorten-64-to-32 error
+        deflate_s.avail_out = static_cast<unsigned int>(increase);
         deflate_s.next_out = (Bytef *)(output.data() + length);
         // From http://www.zlib.net/zlib_how.html
         // "deflate() has a return value that can indicate errors, yet we do not check it here. 

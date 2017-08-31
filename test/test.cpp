@@ -18,27 +18,23 @@ TEST_CASE("successful compress - string") {
 }
 
 TEST_CASE("successful compress - pointer") {
-    std::string data = "hello";
+    std::string data = "hello hello hello hello";
     const char * pointer = data.data();
-    // useful for integer conversion
+    // numeric_limit useful for integer conversion
     unsigned int i = std::numeric_limits<unsigned int>::max();
-    // turn int i into long, so we can add to it safely without overflow
+    // turn int i into a long, so we can add to it safely without overflow
     unsigned long l = static_cast<unsigned long>(i) + 1; 
     
-
+#ifdef DEBUG
     CHECK_THROWS(gzip::compress(pointer, l));
-
-    //REQUIRE(value.size() > data.size());
+#else 
+    std::string value = gzip::compress(pointer, l);
+    REQUIRE(value.size() < data.size());
+#endif
 }
 
-// TEST_CASE("failed compress - pointer with size") {
-//     std::string data = "hello";
-//     const char * pointer = data.data();
-//     CHECK_THROWS(gzip::compress(pointer));
-// }
-
 TEST_CASE("successful decompress") {
-    std::string data = "hello";
+    std::string data = "hello hello hello hello";
     std::string compressed_data = gzip::compress(data);
     std::string value = gzip::decompress(compressed_data);
 
@@ -46,15 +42,25 @@ TEST_CASE("successful decompress") {
 }
 
 TEST_CASE("successful decompress - pointer") {
-    std::string data = "hello";
+    std::string data = "hello hello hello hello";
     const char * pointer = data.data();
     std::string compressed_data = gzip::compress(pointer, data.size());
-    std::string value = gzip::decompress(compressed_data);
+    const char * compressed_pointer = compressed_data.data();
 
+    // numeric_limit useful for integer conversion
+    unsigned int i = std::numeric_limits<unsigned int>::max();
+    // turn int i into a long, so we can add to it safely without overflow
+    unsigned long l = static_cast<unsigned long>(i) + 1; 
+
+#ifdef DEBUG
+    std::clog << "throws!!!";
+    CHECK_THROWS(gzip::decompress(compressed_pointer, l));
+#else 
+    std::string value = gzip::decompress(compressed_pointer, l);
     REQUIRE(value.size() == data.size());
+#endif
+
 }
-
-
 
 TEST_CASE("invalid decompression")
 {
