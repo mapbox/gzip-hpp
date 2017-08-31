@@ -6,6 +6,7 @@
 
 namespace gzip {
 
+static unsigned long MAX_SIZE_BEFORE_COMPRESS = 2000000000; // 2GB decompressed
 
 // Compress method that takes a pointer an immutable character sequence (aka a string in C)
 std::string compress (const char * data,
@@ -35,7 +36,11 @@ std::string compress (const char * data,
     if (size > std::numeric_limits<unsigned int>::max()) {
         throw std::runtime_error("size arg is too large to fit into unsigned int type");
     }
-#endif    
+#endif
+    if (size > MAX_SIZE_BEFORE_COMPRESS) {
+        throw std::runtime_error("current size may use more memory than intended when decompressing in the future");
+    }
+
     deflate_s.avail_in = static_cast<unsigned int>(size);
 
     size_t length = 0;

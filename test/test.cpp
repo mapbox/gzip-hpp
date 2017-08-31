@@ -17,7 +17,9 @@ TEST_CASE("successful compress - string") {
     REQUIRE(value.size() > data.size());
 }
 
-TEST_CASE("successful compress - pointer") {
+TEST_CASE("successful compress - pointer (debug throws int overflow") {
+    //gzip::MAX_SIZE_BEFORE_COMPRESS = 5000000000;
+
     std::string data = "hello hello hello hello";
     const char * pointer = data.data();
     // numeric_limit useful for integer conversion
@@ -33,6 +35,17 @@ TEST_CASE("successful compress - pointer") {
 #endif
 }
 
+TEST_CASE("fail compress - throws max size limit") {
+    //gzip::MAX_SIZE_BEFORE_COMPRESS = 2000000000;
+    std::string data = "hello hello hello hello";
+    const char * pointer = data.data();
+
+    unsigned long l = 2000000001; 
+
+    CHECK_THROWS(gzip::compress(pointer, l));
+
+}
+
 TEST_CASE("successful decompress") {
     std::string data = "hello hello hello hello";
     std::string compressed_data = gzip::compress(data);
@@ -41,7 +54,7 @@ TEST_CASE("successful decompress") {
     REQUIRE(value.size() == data.size());
 }
 
-TEST_CASE("successful decompress - pointer") {
+TEST_CASE("successful decompress - pointer (debug throws int overflow)") {
     std::string data = "hello hello hello hello";
     const char * pointer = data.data();
     std::string compressed_data = gzip::compress(pointer, data.size());
@@ -61,6 +74,7 @@ TEST_CASE("successful decompress - pointer") {
 #endif
 
 }
+
 
 TEST_CASE("invalid decompression")
 {
