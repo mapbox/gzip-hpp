@@ -13,6 +13,11 @@ std::string compress (const char * data,
                       int level=Z_DEFAULT_COMPRESSION, 
                       int strategy=Z_DEFAULT_STRATEGY) {
 
+    // Verify if size input will fit into unsigned int, type used for zlib's avail_in
+    if (size > std::numeric_limits<unsigned int>::max()) {
+        throw std::runtime_error("size arg is too large to fit into unsigned int type");
+    }
+
     std::string output;
     z_stream deflate_s;
 
@@ -29,7 +34,8 @@ std::string compress (const char * data,
         throw std::runtime_error("deflate init failed");
     }
     deflate_s.next_in = (Bytef *)data;
-    deflate_s.avail_in = size;
+    deflate_s.avail_in = size; // implicit conversion happening, potentially long, but expecting int
+    std::clog << deflate_s.avail_in << " " << size << "\n";
     size_t length = 0;
     do {
         size_t increase = size / 2 + 1024;

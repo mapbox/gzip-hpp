@@ -4,6 +4,7 @@
 #include <cassert>
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
+#include <limits>
 
 TEST_CASE("test version") {
     REQUIRE(GZIP_VERSION_STRING == std::string("1.0.0"));
@@ -19,9 +20,15 @@ TEST_CASE("successful compress - string") {
 TEST_CASE("successful compress - pointer") {
     std::string data = "hello";
     const char * pointer = data.data();
-    std::string value = gzip::compress(pointer, data.size());
+    // useful for integer conversion
+    unsigned int i = std::numeric_limits<unsigned int>::max();
+    // turn int i into long, so we can add to it safely without overflow
+    unsigned long l = static_cast<unsigned long>(i) + 1; 
+    
 
-    REQUIRE(value.size() > data.size());
+    CHECK_THROWS(gzip::compress(pointer, l));
+
+    //REQUIRE(value.size() > data.size());
 }
 
 // TEST_CASE("failed compress - pointer with size") {
@@ -46,6 +53,8 @@ TEST_CASE("successful decompress - pointer") {
 
     REQUIRE(value.size() == data.size());
 }
+
+
 
 TEST_CASE("invalid decompression")
 {
