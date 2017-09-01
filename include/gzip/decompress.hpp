@@ -3,6 +3,16 @@
 // std
 #include <stdexcept>
 
+#define USE_BOOST
+
+#ifdef USE_BOOST
+#include <boost/iostreams/device/array.hpp>
+#include <boost/iostreams/compose.hpp>
+#include <boost/iostreams/device/back_inserter.hpp>
+#include <boost/iostreams/copy.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
+#endif
+
 namespace gzip {
 
 // decodes both zlib and gzip
@@ -10,6 +20,14 @@ namespace gzip {
 std::string decompress(const char * data, std::size_t size) {
 
     std::string output;
+#ifdef USE_BOOST
+    boost::iostreams::array_source src(data, size);
+    boost::iostreams::copy(src,
+                           boost::iostreams::compose(
+                             boost::iostreams::gzip_decompressor(),
+                             boost::iostreams::back_inserter(output))
+                           );
+#else
     z_stream inflate_s;
 
     inflate_s.zalloc = Z_NULL;
@@ -37,7 +55,7 @@ std::string decompress(const char * data, std::size_t size) {
     } while (inflate_s.avail_out == 0);
     inflateEnd(&inflate_s);
     output.resize(length);
-
+#endif
     // return the std::string
     return output; 
 }
