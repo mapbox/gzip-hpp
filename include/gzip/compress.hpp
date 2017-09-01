@@ -4,16 +4,40 @@
 // std
 #include <stdexcept>
 
-namespace gzip {
+#define USE_BOOST
 
+#ifdef USE_BOOST
+#include <boost/iostreams/device/array.hpp>
+#include <boost/iostreams/compose.hpp>
+#include <boost/iostreams/device/back_inserter.hpp>
+#include <boost/iostreams/copy.hpp>
+#include <boost/iostreams/filter/gzip.hpp>
+#endif
+
+// https://blog.cppse.nl/deflate-and-gzip-compress-and-decompress-functions
+// http://www.zlib.net/zpipe.c
+// http://www.boost.org/doc/libs/1_50_0/libs/iostreams/doc/classes/gzip.html
+
+namespace gzip {
 
 // Compress method that takes a pointer an immutable character sequence (aka a string in C)
 std::string compress (const char * data,
                       std::size_t size,
                       int level=Z_DEFAULT_COMPRESSION, 
                       int strategy=Z_DEFAULT_STRATEGY) {
-
     std::string output;
+#ifdef USE_BOOST
+    boost::iostreams::array_source src(data, size);
+    boost::iostreams::gzip_params params(level,
+                                         boost::iostreams::zlib::deflated,
+                                         15,
+                                         8,
+                                         strategy
+                                         );
+    boost::iostreams::gzip_compressor compressor(params);
+    boost::iostreams::copy(boost::iostreams::compose(compressor, src),
+                           boost::iostreams::back_inserter(output));
+#else
     z_stream deflate_s;
 
     deflate_s.zalloc = Z_NULL;
@@ -45,6 +69,8 @@ std::string compress (const char * data,
     } while (deflate_s.avail_out == 0);
     deflateEnd(&deflate_s);
     output.resize(length);
+
+#endif
     
     // return the std::string
     return output; 

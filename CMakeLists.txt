@@ -14,9 +14,15 @@ include_directories(SYSTEM ${MASON_PACKAGE_catch_INCLUDE_DIRS})
 mason_use(zlib VERSION 1.2.8)
 include_directories(SYSTEM ${MASON_PACKAGE_zlib_INCLUDE_DIRS})
 
+# headers
+mason_use(boost VERSION 1.63.0 HEADER_ONLY)
+include_directories(SYSTEM ${MASON_PACKAGE_boost_INCLUDE_DIRS})
+# iostreams library which has gzip coding support
+mason_use(boost_libiostreams VERSION 1.63.0)
+
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
 file(GLOB TEST_SOURCES test/*.cpp)
 add_executable(unit-tests ${TEST_SOURCES})
 # link zlib static library to the unit-tests binary so the tests know where to find the zlib impl code
-target_link_libraries(unit-tests ${MASON_PACKAGE_zlib_STATIC_LIBS})
+target_link_libraries(unit-tests ${MASON_PACKAGE_zlib_STATIC_LIBS} ${MASON_PACKAGE_boost_libiostreams_STATIC_LIBS})
