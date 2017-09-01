@@ -18,7 +18,7 @@ TEST_CASE("successful compress - string") {
 }
 
 TEST_CASE("successful compress - pointer (debug throws int overflow") {
-    //gzip::MAX_SIZE_BEFORE_COMPRESS = 5000000000;
+    gzip::MAX_SIZE_BEFORE_COMPRESS = 5000000000;
 
     std::string data = "hello hello hello hello";
     const char * pointer = data.data();
@@ -28,7 +28,7 @@ TEST_CASE("successful compress - pointer (debug throws int overflow") {
     unsigned long l = static_cast<unsigned long>(i) + 1; 
     
 #ifdef DEBUG
-    CHECK_THROWS(gzip::compress(pointer, l));
+    CHECK_THROWS_WITH(gzip::compress(pointer, l), Catch::Contains("size arg is too large to fit into unsigned int type"));
 #else 
     std::string value = gzip::compress(pointer, l);
     REQUIRE(value.size() < data.size());
@@ -42,7 +42,7 @@ TEST_CASE("fail compress - throws max size limit") {
 
     unsigned long l = 2000000001; 
 
-    CHECK_THROWS(gzip::compress(pointer, l));
+    CHECK_THROWS_WITH(gzip::compress(pointer, l), Catch::Contains("size may use more memory than intended when decompressing"));
 
 }
 

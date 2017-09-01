@@ -38,7 +38,7 @@ std::string compress (const char * data,
     }
 #endif
     if (size > MAX_SIZE_BEFORE_COMPRESS) {
-        throw std::runtime_error("current size may use more memory than intended when decompressing in the future");
+        throw std::runtime_error("size may use more memory than intended when decompressing");
     }
 
     deflate_s.avail_in = static_cast<unsigned int>(size);
