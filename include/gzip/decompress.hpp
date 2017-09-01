@@ -5,6 +5,8 @@
 
 namespace gzip {
 
+static const unsigned long MAX_SIZE_BEFORE_DECOMPRESS = 1000000000; // 1GB compressed is roughly 2GB decompressed
+
 // decodes both zlib and gzip
 // http://stackoverflow.com/a/1838702/2333354
 std::string decompress(const char * data, std::size_t size) {
@@ -19,14 +21,17 @@ std::string decompress(const char * data, std::size_t size) {
     inflate_s.next_in = Z_NULL;
     inflateInit2(&inflate_s, 32 + 15);
     inflate_s.next_in = (Bytef *)data;
-    std::clog << "finished declaring vars in decompress";
+
 #ifdef DEBUG
     // Verify if size (long type) input will fit into unsigned int, type used for zlib's avail_in
     std::uint64_t size_64 = size * 2;     
     if (size_64 > std::numeric_limits<unsigned int>::max()) {
         throw std::runtime_error("size arg is too large to fit into unsigned int type x2");
     }
-#endif    
+#endif 
+    if (size > MAX_SIZE_BEFORE_DECOMPRESS) {
+        throw std::runtime_error("size may use more memory than intended when decompressing");
+    }   
     inflate_s.avail_in = static_cast<unsigned int>(size);
     size_t length = 0;
     do {
@@ -49,7 +54,7 @@ std::string decompress(const char * data, std::size_t size) {
     } while (inflate_s.avail_out == 0);
     inflateEnd(&inflate_s);
     output.resize(length);
-    std::clog << "about to return";
+
     // return the std::string
     return output; 
 }
