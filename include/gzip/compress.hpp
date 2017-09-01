@@ -38,6 +38,7 @@ std::string compress (const char * data,
     }
 #endif
     if (size > MAX_SIZE_BEFORE_COMPRESS) {
+        std::clog << "size is more than max";
         throw std::runtime_error("size may use more memory than intended when decompressing");
     }
 
