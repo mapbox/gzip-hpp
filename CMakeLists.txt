@@ -11,6 +11,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -Wsign-compare -
 mason_use(catch VERSION 1.9.6 HEADER_ONLY)
 include_directories(SYSTEM ${MASON_PACKAGE_catch_INCLUDE_DIRS})
 
+mason_use(benchmark VERSION 1.2.0)
+include_directories(SYSTEM ${MASON_PACKAGE_benchmark_INCLUDE_DIRS})
+
 mason_use(zlib VERSION 1.2.8)
 include_directories(SYSTEM ${MASON_PACKAGE_zlib_INCLUDE_DIRS})
 
@@ -18,5 +21,11 @@ include_directories("${PROJECT_SOURCE_DIR}/include")
 
 file(GLOB TEST_SOURCES test/*.cpp)
 add_executable(unit-tests ${TEST_SOURCES})
+
+# libbenchmark.a supports threads and therefore needs pthread support
+find_package(Threads REQUIRED)
+file(GLOB BENCH_SOURCES bench/*.cpp)
+add_executable(bench-tests ${BENCH_SOURCES})
+
 # link zlib static library to the unit-tests binary so the tests know where to find the zlib impl code
 target_link_libraries(unit-tests ${MASON_PACKAGE_zlib_STATIC_LIBS})
