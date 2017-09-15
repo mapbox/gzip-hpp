@@ -1,17 +1,23 @@
 #include <benchmark/benchmark.h>
 #include <gzip.hpp>
+#include <fstream>
 
 static void BM_compress(benchmark::State& state) // NOLINT google-runtime-references
 {
+    const char * pointer;
+    size_t size;
+
     if (state.thread_index == 0)
     {
-
+        std::ifstream t("test.txt");
+        std::string str((std::istreambuf_iterator<char>(t)),
+                        std::istreambuf_iterator<char>());
+        pointer = str.data();
+        size = str.size();
     }
     while (state.KeepRunning())
     {
-        std::string data = "hello";
-        const char * pointer = data.data();
-        std::string value = gzip::compress(pointer, data.size());
+        std::string value = gzip::compress(pointer, size);
         benchmark::DoNotOptimize(value.data());
         benchmark::ClobberMemory();
     }
