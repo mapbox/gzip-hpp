@@ -29,3 +29,4 @@ add_executable(bench-tests ${BENCH_SOURCES})
 
 # link zlib static library to the unit-tests binary so the tests know where to find the zlib impl code
 target_link_libraries(unit-tests ${MASON_PACKAGE_zlib_STATIC_LIBS})
+target_link_libraries(bench-tests ${MASON_PACKAGE_benchmark_STATIC_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${MASON_PACKAGE_zlib_STATIC_LIBS})
