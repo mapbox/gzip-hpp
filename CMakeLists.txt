@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 project(hpp_skel LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/mason.cmake)
