@@ -59,11 +59,4 @@ std::string decompress(const char * data, std::size_t size) {
     return output; 
 }
 
-// Decompress method that takes a C++ std::string
-std::string decompress(std::string const& input)
-{
-	// Call the decompress() function above that takes a const char pointer for code reuse
-    return decompress(input.data(),input.size());
-}
-
 } // end gzip namespace

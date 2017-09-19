@@ -65,14 +65,5 @@ std::string compress (const char * data,
     return output; 
 }
 
-// Compress method that takes a C++ std::string
-std::string compress (std::string const& input, 
-                      int level=Z_DEFAULT_COMPRESSION, 
-                      int strategy=Z_DEFAULT_STRATEGY) {
-    
-    // Call the compress() function above that takes a const char pointer for code reuse
-    return compress(input.data(), input.size(), level, strategy);
-}
-
 
 } // end gzip namespace
