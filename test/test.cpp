@@ -22,7 +22,7 @@ TEST_CASE("successful compress - pointer") {
     const char * pointer = data.data();
 
     std::string value = gzip::compress(pointer, data.size());
-    REQUIRE(value.size() < data.size());
+    REQUIRE(value.size() > 0);
 }
 
 TEST_CASE("fail compress - throws max size limit") {
@@ -53,7 +53,7 @@ TEST_CASE("successful decompress") {
     std::string compressed_data = gzip::compress(data);
     std::string value = gzip::decompress(compressed_data);
 
-    REQUIRE(value.size() == data.size());
+    REQUIRE(data.compare(value) == 0);
 }
 
 TEST_CASE("successful decompress - pointer") {
@@ -63,7 +63,7 @@ TEST_CASE("successful decompress - pointer") {
     const char * compressed_pointer = compressed_data.data();
 
     std::string value = gzip::decompress(compressed_pointer, data.size());
-    REQUIRE(value.size() == data.size());
+    REQUIRE(data.compare(value) == 0);
 }
 
 #ifdef DEBUG
