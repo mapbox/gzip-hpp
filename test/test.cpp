@@ -82,7 +82,7 @@ TEST_CASE("round trip compression - gzip")
     const std::string data("this is a sentence that will be compressed into something");
     const char * pointer = data.data();
 
-    CHECK(!gzip::is_compressed(data));
+    CHECK(!gzip::is_compressed(pointer, data.size()));
     
     int strategy;
 
@@ -110,10 +110,9 @@ TEST_CASE("round trip compression - gzip")
         {
             int level = Z_NO_COMPRESSION;
             std::string compressed_data = gzip::compress(pointer, data.size(), level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
             const char * compressed_pointer = compressed_data.data();
+            CHECK(gzip::is_compressed(compressed_pointer, compressed_data.size()));
             std::string new_data = gzip::decompress(compressed_pointer, compressed_data.size());
-            std::cout << new_data;
             CHECK(data.compare(new_data) == 0);
         }
 
@@ -121,8 +120,8 @@ TEST_CASE("round trip compression - gzip")
         {
             int level = Z_DEFAULT_COMPRESSION;
             std::string compressed_data = gzip::compress(pointer, data.size(), level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
             const char * compressed_pointer = compressed_data.data();
+            CHECK(gzip::is_compressed(compressed_pointer, compressed_data.size()));
             std::string new_data = gzip::decompress(compressed_pointer, compressed_data.size());
             CHECK(data == new_data);
         }
@@ -132,8 +131,8 @@ TEST_CASE("round trip compression - gzip")
             for (int level = Z_BEST_SPEED; level <= Z_BEST_COMPRESSION; ++level)
             {
                 std::string compressed_data = gzip::compress(pointer, data.size(), level, strategy);
-                CHECK(gzip::is_compressed(compressed_data));
                 const char * compressed_pointer = compressed_data.data();
+                CHECK(gzip::is_compressed(compressed_pointer, compressed_data.size()));
                 std::string new_data = gzip::decompress(compressed_pointer, compressed_data.size());
                 CHECK(data == new_data);
             }
@@ -148,8 +147,8 @@ TEST_CASE("round trip compression - gzip")
         {
             int level = Z_NO_COMPRESSION;
             std::string compressed_data = gzip::compress(pointer, data.size(), level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
             const char * compressed_pointer = compressed_data.data();
+            CHECK(gzip::is_compressed(compressed_pointer, compressed_data.size()));
             std::string new_data = gzip::decompress(compressed_pointer, compressed_data.size());
             CHECK(data == new_data);
         }
@@ -158,8 +157,8 @@ TEST_CASE("round trip compression - gzip")
         {
             int level = Z_DEFAULT_COMPRESSION;
             std::string compressed_data = gzip::compress(pointer, data.size(), level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
             const char * compressed_pointer = compressed_data.data();
+            CHECK(gzip::is_compressed(compressed_pointer, compressed_data.size()));
             std::string new_data = gzip::decompress(compressed_pointer, compressed_data.size());
             CHECK(data == new_data);
         }
@@ -169,8 +168,8 @@ TEST_CASE("round trip compression - gzip")
             for (int level = Z_BEST_SPEED; level <= Z_BEST_COMPRESSION; ++level)
             {
                 std::string compressed_data = gzip::compress(pointer, data.size(), level, strategy);
-                CHECK(gzip::is_compressed(compressed_data));
                 const char * compressed_pointer = compressed_data.data();
+                CHECK(gzip::is_compressed(compressed_pointer, compressed_data.size()));
                 std::string new_data = gzip::decompress(compressed_pointer, compressed_data.size());
                 CHECK(data == new_data);
             }
@@ -185,8 +184,8 @@ TEST_CASE("round trip compression - gzip")
         {
             int level = Z_NO_COMPRESSION;
             std::string compressed_data = gzip::compress(pointer, data.size(), level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
             const char * compressed_pointer = compressed_data.data();
+            CHECK(gzip::is_compressed(compressed_pointer, compressed_data.size()));
             std::string new_data = gzip::decompress(compressed_pointer, compressed_data.size());
             CHECK(data == new_data);
         }
@@ -195,8 +194,8 @@ TEST_CASE("round trip compression - gzip")
         {
             int level = Z_DEFAULT_COMPRESSION;
             std::string compressed_data = gzip::compress(pointer, data.size(), level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
             const char * compressed_pointer = compressed_data.data();
+            CHECK(gzip::is_compressed(compressed_pointer, compressed_data.size()));
             std::string new_data = gzip::decompress(compressed_pointer, compressed_data.size());
             CHECK(data == new_data);
         }
@@ -206,8 +205,8 @@ TEST_CASE("round trip compression - gzip")
             for (int level = Z_BEST_SPEED; level <= Z_BEST_COMPRESSION; ++level)
             {
                 std::string compressed_data = gzip::compress(pointer, data.size(), level, strategy);
-                CHECK(gzip::is_compressed(compressed_data));
                 const char * compressed_pointer = compressed_data.data();
+                CHECK(gzip::is_compressed(compressed_pointer, compressed_data.size()));
                 std::string new_data = gzip::decompress(compressed_pointer, compressed_data.size());
                 CHECK(data == new_data);
             }
@@ -222,8 +221,8 @@ TEST_CASE("round trip compression - gzip")
         {
             int level = Z_NO_COMPRESSION;
             std::string compressed_data = gzip::compress(pointer, data.size(), level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
             const char * compressed_pointer = compressed_data.data();
+            CHECK(gzip::is_compressed(compressed_pointer, compressed_data.size()));
             std::string new_data = gzip::decompress(compressed_pointer, compressed_data.size());
             CHECK(data == new_data);
         }
@@ -232,8 +231,8 @@ TEST_CASE("round trip compression - gzip")
         {
             int level = Z_DEFAULT_COMPRESSION;
             std::string compressed_data = gzip::compress(pointer, data.size(), level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
             const char * compressed_pointer = compressed_data.data();
+            CHECK(gzip::is_compressed(compressed_pointer, compressed_data.size()));
             std::string new_data = gzip::decompress(compressed_pointer, compressed_data.size());
             CHECK(data == new_data);
         }
@@ -243,8 +242,8 @@ TEST_CASE("round trip compression - gzip")
             for (int level = Z_BEST_SPEED; level <= Z_BEST_COMPRESSION; ++level)
             {
                 std::string compressed_data = gzip::compress(pointer, data.size(), level, strategy);
-                CHECK(gzip::is_compressed(compressed_data));
                 const char * compressed_pointer = compressed_data.data();
+                CHECK(gzip::is_compressed(compressed_pointer, compressed_data.size()));
                 std::string new_data = gzip::decompress(compressed_pointer, compressed_data.size());
                 CHECK(data == new_data);
             }
@@ -259,8 +258,8 @@ TEST_CASE("round trip compression - gzip")
         {
             int level = Z_NO_COMPRESSION;
             std::string compressed_data = gzip::compress(pointer, data.size(), level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
             const char * compressed_pointer = compressed_data.data();
+            CHECK(gzip::is_compressed(compressed_pointer, compressed_data.size()));
             std::string new_data = gzip::decompress(compressed_pointer, compressed_data.size());
             CHECK(data == new_data);
         }
@@ -269,8 +268,8 @@ TEST_CASE("round trip compression - gzip")
         {
             int level = Z_DEFAULT_COMPRESSION;
             std::string compressed_data = gzip::compress(pointer, data.size(), level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
             const char * compressed_pointer = compressed_data.data();
+            CHECK(gzip::is_compressed(compressed_pointer, compressed_data.size()));
             std::string new_data = gzip::decompress(compressed_pointer, compressed_data.size());
             CHECK(data == new_data);
         }
@@ -280,8 +279,8 @@ TEST_CASE("round trip compression - gzip")
             for (int level = Z_BEST_SPEED; level <= Z_BEST_COMPRESSION; ++level)
             {
                 std::string compressed_data = gzip::compress(pointer, data.size(), level, strategy);
-                CHECK(gzip::is_compressed(compressed_data));
                 const char * compressed_pointer = compressed_data.data();
+                CHECK(gzip::is_compressed(compressed_pointer, compressed_data.size()));
                 std::string new_data = gzip::decompress(compressed_pointer, compressed_data.size());
                 CHECK(data == new_data);
             }

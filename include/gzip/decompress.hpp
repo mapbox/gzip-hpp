@@ -35,11 +35,7 @@ std::string decompress(const char * data, std::size_t size) {
     inflate_s.avail_in = static_cast<unsigned int>(size);
     size_t length = 0;
     do {
-        //std::clog << "about to resize output";
         output.resize(length + 2 * size);
-        //std::clog << "finished resizing output";
-        //std::uint64_t size_64 = size * 2; 
-        //inflate_s.avail_out = static_cast<unsigned int>(size_64);
         inflate_s.avail_out = static_cast<unsigned int>(2 * size);
         inflate_s.next_out = (Bytef *)(output.data() + length);
         int ret = inflate(&inflate_s, Z_FINISH);
