@@ -2,6 +2,7 @@
 #include <zlib.h>
 // std
 #include <stdexcept>
+#include <limits>
 
 namespace gzip {
 
