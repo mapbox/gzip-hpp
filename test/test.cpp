@@ -24,7 +24,7 @@ TEST_CASE("fail compress - throws max size limit") {
 
     unsigned long l = 2000000001; 
 
-    CHECK_THROWS_WITH(gzip::compress(pointer, l), Catch::Contains("size may use more memory than intended when decompressing"));
+    REQUIRE_THROWS_WITH(gzip::compress(pointer, l), Catch::Contains("size may use more memory than intended when decompressing"));
 }
 
 #ifdef DEBUG
@@ -36,7 +36,7 @@ TEST_CASE("fail compress - pointer, debug throws int overflow") {
     // turn int i into a long, so we can add to it safely without overflow
     unsigned long l = static_cast<unsigned long>(i) + 1; 
     
-    CHECK_THROWS_WITH(gzip::compress(pointer, l), Catch::Contains("size arg is too large to fit into unsigned int type"));
+    REQUIRE_THROWS_WITH(gzip::compress(pointer, l), Catch::Contains("size arg is too large to fit into unsigned int type"));
 
 }
 #endif
@@ -63,7 +63,7 @@ TEST_CASE("fail decompress - pointer, debug throws int overflow") {
     // turn int i into a long, so we can add to it safely without overflow
     unsigned long l = static_cast<unsigned long>(i) + 1; 
     
-    CHECK_THROWS_WITH(gzip::decompress(compressed_pointer, l), Catch::Contains("size arg is too large to fit into unsigned int type x2"));
+    REQUIRE_THROWS_WITH(gzip::decompress(compressed_pointer, l), Catch::Contains("size arg is too large to fit into unsigned int type x2"));
 }
 #endif
 
