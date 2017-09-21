@@ -18,7 +18,13 @@ endif()
 
 # Note: -D_GLIBCXX_USE_CXX11_ABI=0 is needed to support mason packages that are precompiled libs
 # Currently we only depend on a header only library, but this will help avoid issues when more libs are added via mason
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OPTIMIZATION_FLAGS} -fsanitize=unsigned-integer-overflow -Wall -Wextra -pedantic -Wsign-compare -Wconversion -Wshadow")
+if(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OPTIMIZATION_FLAGS} -Wall -Wextra -pedantic -Wsign-compare -Wconversion -Wshadow")
+elseif(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OPTIMIZATION_FLAGS} -fsanitize=unsigned-integer-overflow -Wall -Wextra -pedantic -Wsign-compare -Wconversion -Wshadow")
+elseif()
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OPTIMIZATION_FLAGS} -fsanitize=unsigned-integer-overflow -Wall -Wextra -pedantic -Wsign-compare -Wconversion -Wshadow")
+endif()
 
 if (WERROR)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
