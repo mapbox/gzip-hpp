@@ -20,9 +20,7 @@ endif()
 # Currently we only depend on a header only library, but this will help avoid issues when more libs are added via mason
 if(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OPTIMIZATION_FLAGS} -Wall -Wextra -pedantic -Wsign-compare -Wconversion -Wshadow")
-elseif(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OPTIMIZATION_FLAGS} -fsanitize=unsigned-integer-overflow -Wall -Wextra -pedantic -Wsign-compare -Wconversion -Wshadow")
-elseif()
+else()
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OPTIMIZATION_FLAGS} -fsanitize=unsigned-integer-overflow -Wall -Wextra -pedantic -Wsign-compare -Wconversion -Wshadow")
 endif()
 
