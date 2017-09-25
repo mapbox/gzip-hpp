@@ -4,11 +4,11 @@ matrix:
   include:
     - os: linux
       sudo: false
-      env: CXX=g++-5
+      env: CXX=g++-6
       addons:
         apt:
           sources: [ 'ubuntu-toolchain-r-test' ]
-          packages: [ 'g++-5' ]
+          packages: [ 'g++-6' ]
     - os: linux
       sudo: false
       env: CXX=clang++
