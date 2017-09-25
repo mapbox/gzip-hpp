@@ -2,7 +2,7 @@
 #include <gzip.hpp>
 #include <fstream>
 
-static void BM_compress(benchmark::State& state, const char * data, size_t length) // NOLINT google-runtime-references
+auto BM_compress = [](benchmark::State& state, const char * data, size_t length) // NOLINT google-runtime-references
 {
 
     if (state.thread_index == 0)
@@ -19,9 +19,9 @@ static void BM_compress(benchmark::State& state, const char * data, size_t lengt
     {
         // Teardown code here.
     }
-}
+};
 
-static void BM_decompress(benchmark::State& state, const char * data, size_t length) // NOLINT google-runtime-references
+auto BM_decompress = [](benchmark::State& state, const char * data, size_t length) // NOLINT google-runtime-references
 {
 
     if (state.thread_index == 0)
@@ -38,7 +38,7 @@ static void BM_decompress(benchmark::State& state, const char * data, size_t len
     {
         // Teardown code here.
     }
-}
+};
 
 int main(int argc, char* argv[])
 {
