@@ -15,8 +15,8 @@ static void test_memory_throw() {
     try {
         std::cout << "HELOOOOOOO";
         std::string value = gzip::compress(pointer, l);
-    } catch(const char* msg) {
-        std::cout << msg;
+    } catch(std::exception const& msg) {
+        std::cout << msg.what();
         //assert(msg == "size may use more memory than intended when decompressing");
     }
 }
