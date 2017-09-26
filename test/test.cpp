@@ -1,5 +1,6 @@
 #include <gzip.hpp>
 
+#include <exception>
 #include <iostream>
 #include <cassert>
 // #define CATCH_CONFIG_MAIN
@@ -13,10 +14,9 @@ static void test_memory_throw() {
     unsigned long l = 2000000001; 
     
     try {
-        std::cout << "HELOOOOOOO";
         std::string value = gzip::compress(pointer, l);
-    } catch(const char* msg) {
-        std::cout << msg;
+    } catch(std::exception const& ex) {
+        std::cout << ex.what() << "\n";
         //assert(msg == "size may use more memory than intended when decompressing");
     }
 }
