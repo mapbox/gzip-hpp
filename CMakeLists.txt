@@ -12,7 +12,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(OPTIMIZATION_FLAGS "-O0 -DDEBUG")
     message("-- Configuring debug build")
 else()
-    set(OPTIMIZATION_FLAGS "-O3 -DNDEBUG")
+    set(OPTIMIZATION_FLAGS "-O3 -DNDEBUG -g")
     message("-- Configuring release build")
 endif()
 
