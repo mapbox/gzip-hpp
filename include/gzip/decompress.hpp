@@ -20,7 +20,10 @@ std::string decompress(const char * data, std::size_t size) {
     inflate_s.opaque = Z_NULL;
     inflate_s.avail_in = 0;
     inflate_s.next_in = Z_NULL;
-    inflateInit2(&inflate_s, 32 + 15);
+    if (inflateInit2(&inflate_s, 32 + 15) != Z_OK)
+    {
+        throw std::runtime_error("inflate init failed");
+    }
     inflate_s.next_in = (Bytef *)data;
 
 #ifdef DEBUG
