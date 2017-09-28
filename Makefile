@@ -15,6 +15,9 @@ test: release debug
 	@echo "Running tests for Release mode"
 	./build/Release/unit-tests
 
+bench:
+	@if [ -f ./build/bench-tests ]; then ./build/bench-tests; else echo "Please run 'make release' or 'make debug' first" && exit 1; fi
+
 tidy:
 	./scripts/clang-tidy.sh
 
@@ -27,7 +30,7 @@ clean:
 format:
 	./scripts/format.sh
 
-.PHONY: test
+.PHONY: test bench
 
 # TODO: once gzip has its own repo, consider adding `-Wold-style-cast` as a debug flag and moving to C-style casting to static_cast
 # Not sure where this should live, now that flags are no longer in the Makefile. Perhaps in setup.sh?
