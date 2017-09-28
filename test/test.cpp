@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cassert>
 #define CATCH_CONFIG_MAIN
-#include <catch.hpp>
+#include "catch.hpp"
 #include <limits>
 
 TEST_CASE("test version") {
