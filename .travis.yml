@@ -3,14 +3,14 @@ language: generic
 matrix:
   include:
     - os: linux
-      sudo: false
+      sudo: true
       env: CXX=g++-5
       addons:
         apt:
           sources: [ 'ubuntu-toolchain-r-test' ]
           packages: [ 'g++-5' ]
     - os: linux
-      sudo: false
+      sudo: true
       env: CXX=clang++
       addons:
         apt:
@@ -31,6 +31,11 @@ env:
    - CMAKE_VERSION="3.8.2"
 
 install:
+  - mkdir mason && curl -sSfL https://github.com/mapbox/mason/archive/v0.6.0.tar.gz | tar --gunzip --extract --strip-components=1 --directory=./mason
+  - ./mason/mason install gdb 7.12
+  - export PATH=$(./mason/mason prefix gdb 7.12)/bin:${PATH}
+  - curl -sSfL https://github.com/mapbox/logbt/archive/v2.0.3.tar.gz | sudo tar --gunzip --extract --strip-components=1 --exclude="*md" --exclude="test*" --directory=/usr/local
+  - sudo logbt --setup
   # set up the environment by installing mason and clang++
   - ./scripts/setup.sh --config local.env
   # put mason and clang++ on PATH
@@ -40,9 +45,9 @@ install:
   - which cmake
 
 script:
-  - make release
-  - make test
-  - make clean
-  - make debug
-  - make test
-  - make clean
+  - logbt -- make release
+  - logbt -- make test
+  - logbt -- make clean
+  - logbt -- make debug
+  - logbt -- make test
+  - logbt -- make clean
