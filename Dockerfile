@@ -17,4 +17,4 @@ COPY ./ ./
 RUN ./scripts/setup.sh --config local.env
 RUN /bin/bash -c "source local.env && mason install cmake ${CMAKE_VERSION} && mason link cmake ${CMAKE_VERSION} && which cmake"
 
-CMD /bin/bash -c "source local.env && make test"
+CMD /bin/bash -c "source local.env && make debug && make test"
