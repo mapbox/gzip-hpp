@@ -18,17 +18,11 @@ test: release debug
 bench:
 	@if [ -f ./build/bench-tests ]; then ./build/bench-tests; else echo "Please run 'make release' or 'make debug' first" && exit 1; fi
 
-tidy:
-	./scripts/clang-tidy.sh
-
 coverage:
 	./scripts/coverage.sh
 
 clean:
 	rm -rf build
-
-format:
-	./scripts/format.sh
 
 .PHONY: test bench
 
