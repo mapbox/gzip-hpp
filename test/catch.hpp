@@ -6385,95 +6385,11 @@ namespace Catch {
 
 #else // Not Windows - assumed to be POSIX compatible //////////////////////////
 
-#  if !defined(CATCH_CONFIG_POSIX_SIGNALS)
-
 namespace Catch {
     struct FatalConditionHandler {
         void reset() {}
     };
 }
-
-#  else // CATCH_CONFIG_POSIX_SIGNALS is defined
-
-#include <signal.h>
-
-namespace Catch {
-
-    struct SignalDefs {
-        int id;
-        const char* name;
-    };
-    extern SignalDefs signalDefs[];
-    SignalDefs signalDefs[] = {
-            { SIGINT,  "SIGINT - Terminal interrupt signal" },
-            { SIGILL,  "SIGILL - Illegal instruction signal" },
-            { SIGFPE,  "SIGFPE - Floating point error signal" },
-            { SIGSEGV, "SIGSEGV - Segmentation violation signal" },
-            { SIGTERM, "SIGTERM - Termination request signal" },
-            { SIGABRT, "SIGABRT - Abort (abnormal termination) signal" }
-    };
-
-    struct FatalConditionHandler {
-
-        static bool isSet;
-        static struct sigaction oldSigActions [sizeof(signalDefs)/sizeof(SignalDefs)];
-        static stack_t oldSigStack;
-        static char altStackMem[SIGSTKSZ];
-
-        static void handleSignal( int sig ) {
-            std::string name = "<unknown signal>";
-            for (std::size_t i = 0; i < sizeof(signalDefs) / sizeof(SignalDefs); ++i) {
-                SignalDefs &def = signalDefs[i];
-                if (sig == def.id) {
-                    name = def.name;
-                    break;
-                }
-            }
-            reset();
-            reportFatal(name);
-            raise( sig );
-        }
-
-        FatalConditionHandler() {
-            isSet = true;
-            stack_t sigStack;
-            sigStack.ss_sp = altStackMem;
-            sigStack.ss_size = SIGSTKSZ;
-            sigStack.ss_flags = 0;
-            sigaltstack(&sigStack, &oldSigStack);
-            struct sigaction sa = { 0 };
-
-            sa.sa_handler = handleSignal;
-            sa.sa_flags = SA_ONSTACK;
-            for (std::size_t i = 0; i < sizeof(signalDefs)/sizeof(SignalDefs); ++i) {
-                sigaction(signalDefs[i].id, &sa, &oldSigActions[i]);
-            }
-        }
-
-        ~FatalConditionHandler() {
-            reset();
-        }
-        static void reset() {
-            if( isSet ) {
-                // Set signals back to previous values -- hopefully nobody overwrote them in the meantime
-                for( std::size_t i = 0; i < sizeof(signalDefs)/sizeof(SignalDefs); ++i ) {
-                    sigaction(signalDefs[i].id, &oldSigActions[i], CATCH_NULL);
-                }
-                // Return the old stack
-                sigaltstack(&oldSigStack, CATCH_NULL);
-                isSet = false;
-            }
-        }
-    };
-
-    bool FatalConditionHandler::isSet = false;
-    struct sigaction FatalConditionHandler::oldSigActions[sizeof(signalDefs)/sizeof(SignalDefs)] = {};
-    stack_t FatalConditionHandler::oldSigStack = {};
-    char FatalConditionHandler::altStackMem[SIGSTKSZ] = {};
-
-} // namespace Catch
-
-#  endif // CATCH_CONFIG_POSIX_SIGNALS
 
 #endif // not Windows
 
