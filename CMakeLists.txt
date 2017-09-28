@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED on)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/mason.cmake)
 
-option(WERROR "Add -Werror flag to build (turns warnings into errors)" OFF)
+option(WERROR "Add -Werror flag to build (turns warnings into errors)" ON)
 
 # configure optimization
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
