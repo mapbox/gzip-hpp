@@ -27,10 +27,12 @@ std::string decompress(const char * data, std::size_t size) {
     // Verify if size (long type) input will fit into unsigned int, type used for zlib's avail_in
     std::uint64_t size_64 = size * 2;     
     if (size_64 > std::numeric_limits<unsigned int>::max()) {
+        inflateEnd(&inflate_s);
         throw std::runtime_error("size arg is too large to fit into unsigned int type x2");
     }
 #endif 
     if (size > MAX_SIZE_BEFORE_DECOMPRESS) {
+        inflateEnd(&inflate_s);
         throw std::runtime_error("size may use more memory than intended when decompressing");
     }   
     inflate_s.avail_in = static_cast<unsigned int>(size);
