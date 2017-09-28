@@ -28,6 +28,7 @@ std::string compress (const char * data,
     // TODO: double check this
     if (deflateInit2(&deflate_s, level, Z_DEFLATED, 31, 8, strategy) != Z_OK)
     {
+        deflateEnd(&deflate_s); // explicitly end deflate to avoid memory leak
         throw std::runtime_error("deflate init failed");
     }
     deflate_s.next_in = (Bytef *)data;
@@ -35,10 +36,12 @@ std::string compress (const char * data,
 #ifdef DEBUG
     // Verify if size input will fit into unsigned int, type used for zlib's avail_in
     if (size > std::numeric_limits<unsigned int>::max()) {
+        deflateEnd(&deflate_s); // explicitly end deflate to avoid memory leak
         throw std::runtime_error("size arg is too large to fit into unsigned int type");
     }
 #endif
     if (size > MAX_SIZE_BEFORE_COMPRESS) {
+        deflateEnd(&deflate_s); // explicitly end deflate to avoid memory leak
         throw std::runtime_error("size may use more memory than intended when decompressing");
     }
 
