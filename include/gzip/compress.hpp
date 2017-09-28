@@ -28,7 +28,7 @@ std::string compress (const char * data,
     // TODO: double check this
     if (deflateInit2(&deflate_s, level, Z_DEFLATED, 31, 8, strategy) != Z_OK)
     {
-        deflateEnd(&deflate_s); // explicitly end deflate to avoid memory leak
+        deflateReset(&deflate_s); // explicitly end deflate to avoid memory leak
         throw std::runtime_error("deflate init failed");
     }
     deflate_s.next_in = (Bytef *)data;
