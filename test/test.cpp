@@ -1,7 +1,7 @@
 #include <gzip.hpp>
 
-#include <iostream>
 #include <cassert>
+#include <iostream>
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 #include <limits>
@@ -15,7 +15,7 @@ TEST_CASE("successful compress - pointer") {
     const char * pointer = data.data();
 
     std::string value = gzip::compress(pointer, data.size());
-    REQUIRE(value.size() > 0);
+    REQUIRE(!value.empty());
 }
 
 TEST_CASE("fail compress - throws max size limit") {
@@ -48,7 +48,7 @@ TEST_CASE("successful decompress - pointer") {
     const char * compressed_pointer = compressed_data.data();
 
     std::string value = gzip::decompress(compressed_pointer, data.size());
-    REQUIRE(data.compare(value) == 0);
+    REQUIRE(data == value);
 }
 
 #ifdef DEBUG
@@ -113,7 +113,7 @@ TEST_CASE("round trip compression - gzip")
             const char * compressed_pointer = compressed_data.data();
             CHECK(gzip::is_compressed(compressed_pointer, compressed_data.size()));
             std::string new_data = gzip::decompress(compressed_pointer, compressed_data.size());
-            CHECK(data.compare(new_data) == 0);
+            CHECK(data == new_data);
         }
 
         SECTION("default compression level")

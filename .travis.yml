@@ -25,6 +25,15 @@ matrix:
           packages: [ 'libstdc++6', 'libstdc++-5-dev' ]
     - os: osx
       osx_image: xcode8.3
+    # clang-tidy specific job
+    - os: linux
+      sudo: false
+      addons:
+        apt:
+          sources: [ 'ubuntu-toolchain-r-test' ]
+          packages: [ 'libstdc++6', 'libstdc++-5-dev' ]
+      script:
+        - make tidy
 
 env:
   global:
