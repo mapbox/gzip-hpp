@@ -21,7 +21,7 @@ mason install clang-format ${MASON_LLVM_RELEASE}
 mason link clang-format ${MASON_LLVM_RELEASE}
 
 # Run clang-format on all cpp and hpp files in the /src directory
-find include/ -type f -name '*.hpp' \
+find include/ test/ -type f -name '*.hpp'  -or -name '*.cpp' \
  | xargs -I{} clang-format -i -style=file {}
 
 # Print list of modified files
