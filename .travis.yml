@@ -33,16 +33,16 @@ matrix:
           sources: [ 'ubuntu-toolchain-r-test' ]
           packages: [ 'libstdc++6', 'libstdc++-5-dev' ]
       script:
+        # First run the clang-tidy target
+        # This target does not currently return non-zero when problems
+        # are fixed, but rather it fixes automatically. Changed files
+        # will be detected by the format target and will trigger an error
         - make tidy
-    # Clang format build
-    - os: linux
-      sudo: false
-      addons:
-        apt:
-          sources: [ 'ubuntu-toolchain-r-test' ]
-          packages: [ 'libstdc++6', 'libstdc++-5-dev' ]
-      script:
+        # Now we run the clang-format script. Any code formatting changes
+        # will trigger the build to fail (idea here is to get us to pay attention
+        # and get in the habit of running these locally before committing)
         - make format
+
 
 env:
   global:

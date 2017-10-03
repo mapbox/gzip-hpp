@@ -30,6 +30,7 @@ dirty=$(git ls-files --modified include/)
 if [[ $dirty ]]; then
     echo "The following files have been modified:"
     echo $dirty
+    git diff
     exit 1
 else
     exit 0
