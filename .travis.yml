@@ -15,16 +15,34 @@ matrix:
       addons:
         apt:
           sources: [ 'ubuntu-toolchain-r-test' ]
-          packages: [ 'libstdc++6', 'libstdc++-5-dev' ]
+          packages: [ 'libstdc++-5-dev' ]
     - os: linux
       sudo: false
       env: CXX=clang++ CXXFLAGS="-fsanitize=address,undefined -fno-sanitize-recover=all"
       addons:
         apt:
           sources: [ 'ubuntu-toolchain-r-test' ]
-          packages: [ 'libstdc++6', 'libstdc++-5-dev' ]
+          packages: [ 'libstdc++-5-dev' ]
     - os: osx
       osx_image: xcode8.3
+    # clang-tidy specific job
+    - os: linux
+      sudo: false
+      addons:
+        apt:
+          sources: [ 'ubuntu-toolchain-r-test' ]
+          packages: [ 'libstdc++-5-dev' ]
+      script:
+        # First run the clang-tidy target
+        # This target does not currently return non-zero when problems
+        # are fixed, but rather it fixes automatically. Changed files
+        # will be detected by the format target and will trigger an error
+        - make tidy
+        # Now we run the clang-format script. Any code formatting changes
+        # will trigger the build to fail (idea here is to get us to pay attention
+        # and get in the habit of running these locally before committing)
+        - make format
+
 
 env:
   global:

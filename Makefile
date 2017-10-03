@@ -18,6 +18,12 @@ bench:
 coverage:
 	./scripts/coverage.sh
 
+tidy:
+	./scripts/clang-tidy.sh
+
+format:
+	./scripts/format.sh
+
 clean:
 	rm -rf build
 

@@ -4,3 +4,5 @@ build
 *.profdata
 *.profraw
 .toolchain
+.mason
+local.env

@@ -1,6 +1,6 @@
 #include <benchmark/benchmark.h>
-#include <gzip.hpp>
 #include <fstream>
+#include <gzip.hpp>
 
 auto BM_compress = [](benchmark::State& state, const char * data, size_t length) // NOLINT google-runtime-references
 {
