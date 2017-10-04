@@ -42,9 +42,15 @@ auto BM_decompress = [](benchmark::State& state, const char * data, size_t lengt
 
 int main(int argc, char* argv[])
 {
-    std::ifstream t("14-4685-6265.mvt");
-    std::string str_uncompressed((std::istreambuf_iterator<char>(t)),
+    std::string filename("./bench/14-4685-6265.mvt");
+    std::ifstream stream(filename,std::ios_base::in|std::ios_base::binary);
+    if (!stream.is_open())
+    {
+        throw std::runtime_error("could not open: '" + filename + "'");
+    }
+    std::string str_uncompressed((std::istreambuf_iterator<char>(stream.rdbuf())),
                     std::istreambuf_iterator<char>());
+    stream.close();
 
     std::string str_compressed = gzip::compress(str_uncompressed.data(), str_uncompressed.size());
 
