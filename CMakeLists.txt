@@ -36,6 +36,7 @@ mason_use(zlib VERSION 1.2.8)
 include_directories(SYSTEM ${MASON_PACKAGE_zlib_INCLUDE_DIRS})
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
+include_directories("/Users/dane/projects/libdeflate")
 
 file(GLOB TEST_SOURCES test/*.cpp)
 add_executable(unit-tests ${TEST_SOURCES})
@@ -46,5 +47,5 @@ file(GLOB BENCH_SOURCES bench/*.cpp)
 add_executable(bench-tests ${BENCH_SOURCES})
 
 # link zlib static library to the unit-tests binary so the tests know where to find the zlib impl code
-target_link_libraries(unit-tests ${MASON_PACKAGE_zlib_STATIC_LIBS})
-target_link_libraries(bench-tests ${MASON_PACKAGE_benchmark_STATIC_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${MASON_PACKAGE_zlib_STATIC_LIBS})
+target_link_libraries(unit-tests ${MASON_PACKAGE_zlib_STATIC_LIBS} /Users/dane/projects/libdeflate/libdeflate.a)
+target_link_libraries(bench-tests ${MASON_PACKAGE_benchmark_STATIC_LIBS} /Users/dane/projects/libdeflate/libdeflate.a ${CMAKE_THREAD_LIBS_INIT} ${MASON_PACKAGE_zlib_STATIC_LIBS})

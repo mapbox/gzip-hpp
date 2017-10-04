@@ -4,6 +4,7 @@
 // std
 #include <limits>
 #include <stdexcept>
+#include <libdeflate.h>
 
 namespace gzip {
 
@@ -12,11 +13,44 @@ static const unsigned long MAX_SIZE_BEFORE_COMPRESS = 2000000000; // 2GB decompr
 // Compress method that takes a pointer an immutable character sequence (aka a string in C)
 std::string compress(const char* data,
                      std::size_t size,
-                     int level = Z_DEFAULT_COMPRESSION,
-                     int strategy = Z_DEFAULT_STRATEGY)
+                     int level = Z_DEFAULT_COMPRESSION)
 {
 
-    std::string output;
+#ifdef DEBUG
+    // Verify if size input will fit into unsigned int, type used for zlib's avail_in
+    if (size > std::numeric_limits<unsigned int>::max())
+    {
+        throw std::runtime_error("size arg is too large to fit into unsigned int type");
+    }
+#endif
+    if (size > MAX_SIZE_BEFORE_COMPRESS)
+    {
+        throw std::runtime_error("size may use more memory than intended when decompressing");
+    }
+
+    if (level == -1) {
+        level = 6;
+    }
+    struct libdeflate_compressor * compressor = libdeflate_alloc_compressor(level);
+    if (!compressor) {
+        throw std::runtime_error("libdeflate_alloc_compressor failed");
+    }
+    std::size_t max_compressed_size = libdeflate_gzip_compress_bound(compressor,size);
+    // sanity check this first before allocating?
+    std::string compressed_data(max_compressed_size, '\0');
+    std::size_t actual_compressed_size = libdeflate_gzip_compress(compressor,
+                                              data,
+                                              size,
+                                              (void*)compressed_data.data(),
+                                              max_compressed_size);
+    libdeflate_free_compressor(compressor);
+    if (actual_compressed_size == 0) {
+        throw std::runtime_error("actual_compressed_size 0");        
+    }
+    compressed_data.resize(actual_compressed_size);
+    return compressed_data;
+    /*
+
     z_stream deflate_s;
 
     deflate_s.zalloc = Z_NULL;
@@ -70,6 +104,7 @@ std::string compress(const char* data,
 
     // return the std::string
     return output;
+    */
 }
 
 } // end gzip namespace
