@@ -4,8 +4,8 @@
 #include <zlib.h>
 // std
 #include <limits>
-#include <string>
 #include <stdexcept>
+#include <string>
 
 namespace gzip {
 
