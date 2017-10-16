@@ -1,8 +1,11 @@
+#include <gzip/config.hpp>
+
 // zlib
 #include <zlib.h>
 // std
 #include <limits>
 #include <stdexcept>
+#include <string>
 
 namespace gzip {
 
@@ -25,7 +28,7 @@ std::string decompress(const char* data, std::size_t size)
     {
         throw std::runtime_error("inflate init failed");
     }
-    inflate_s.next_in = (Bytef*)data;
+    inflate_s.next_in = reinterpret_cast<z_const Bytef*>(data);
 
 #ifdef DEBUG
     // Verify if size (long type) input will fit into unsigned int, type used for zlib's avail_in
@@ -47,7 +50,7 @@ std::string decompress(const char* data, std::size_t size)
     {
         output.resize(length + 2 * size);
         inflate_s.avail_out = static_cast<unsigned int>(2 * size);
-        inflate_s.next_out = (Bytef*)(output.data() + length);
+        inflate_s.next_out = reinterpret_cast<Bytef*>(&output[0] + length);
         int ret = inflate(&inflate_s, Z_FINISH);
         if (ret != Z_STREAM_END && ret != Z_OK && ret != Z_BUF_ERROR)
         {

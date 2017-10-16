@@ -1,4 +1,7 @@
+#include <cstdlib>
+
 namespace gzip {
+
 // These live in gzip.hpp because it doesnt need to use deps.
 // Otherwise, they would need to live in impl files if these methods used
 // zlib structures or functions like inflate/deflate)
