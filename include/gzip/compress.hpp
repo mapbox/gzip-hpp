@@ -1,9 +1,11 @@
-#include <iostream>
+#include <gzip/config.hpp>
+
 // zlib
 #include <zlib.h>
 // std
 #include <limits>
 #include <stdexcept>
+#include <string>
 
 namespace gzip {
 
@@ -31,7 +33,7 @@ std::string compress(const char* data,
     {
         throw std::runtime_error("deflate init failed");
     }
-    deflate_s.next_in = (Bytef*)data;
+    deflate_s.next_in = reinterpret_cast<z_const Bytef*>(data);
 
 #ifdef DEBUG
     // Verify if size input will fit into unsigned int, type used for zlib's avail_in
@@ -57,7 +59,7 @@ std::string compress(const char* data,
         // There is no way we see that "increase" would not fit in an unsigned int,
         // hence we use static cast here to avoid -Wshorten-64-to-32 error
         deflate_s.avail_out = static_cast<unsigned int>(increase);
-        deflate_s.next_out = (Bytef*)(output.data() + length);
+        deflate_s.next_out = reinterpret_cast<Bytef*>((&output[0] + length));
         // From http://www.zlib.net/zlib_how.html
         // "deflate() has a return value that can indicate errors, yet we do not check it here.
         // Why not? Well, it turns out that deflate() can do no wrong here."
