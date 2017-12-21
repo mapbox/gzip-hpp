@@ -291,3 +291,61 @@ TEST_CASE("round trip compression - gzip")
         }
     }
 }
+
+
+TEST_CASE("low level interface works as expected")
+{
+    // compress
+    std::string data = "hello hello hello hello 8923uropasjdflajhsi hp97yd98fy93kjnn a asdfasdf0000000 asdfasdfasd f2rqwrtddddddddd ";
+    std::string result1 = gzip::compress(data.data(),data.size());
+    gzip::Compressor comp;
+    std::string result2;
+    std::size_t compressed_size = comp.compress(result2,data.data(),data.size());
+    CHECK(result1.size() == compressed_size);
+    std::string result2_trimmed = result2.substr(0,compressed_size);
+    CHECK(result1 == result2_trimmed);
+    CHECK(result1.size() == result2_trimmed.size());
+
+    // test re-used scratch space/arena during compression
+    std::size_t HEADER_LENGTH = 20;
+    std::vector<std::pair<std::string,std::size_t>> strings = {
+        {"", 0 + HEADER_LENGTH}
+        ,{" ", 1 + HEADER_LENGTH}
+        ,{"  ", 2 + HEADER_LENGTH}
+        ,{"", 0 + HEADER_LENGTH}
+    };
+    std::string arena;
+    std::size_t last_size = 0;
+    for (auto const& d : strings)
+    {
+        std::size_t c_size = comp.compress(arena,d.first.data(),d.first.size());
+        CHECK(c_size == d.second);
+        if (last_size > 0) {
+           CHECK(arena.size() >= last_size);
+        }
+        last_size = arena.size();
+    }
+
+    // decompress
+    gzip::Decompressor decomp;
+    // test re-used scratch space/arena during decompression
+    std::vector<std::string> decomp_strings = {
+        {""}
+        ,{" "}
+        ,{"  "}
+        ,{"   "}
+    };
+    std::string decomp_arena;
+    std::size_t decomp_last_size = 0;
+    for (auto const& d : decomp_strings)
+    {
+        std::string value = gzip::compress(d.data(), d.size());
+        std::size_t c_size = decomp.decompress(decomp_arena,value.data(),value.size());
+        CHECK(c_size == d.size());
+        if (decomp_last_size > 0) {
+           CHECK(decomp_arena.size() >= decomp_last_size);
+        }
+        decomp_last_size = decomp_arena.size();
+    }
+
+}
