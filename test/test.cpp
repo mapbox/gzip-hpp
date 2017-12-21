@@ -329,23 +329,27 @@ TEST_CASE("low level interface works as expected")
     // decompress
     gzip::Decompressor decomp;
     // test re-used scratch space/arena during decompression
-    std::vector<std::string> decomp_strings = {
-        {""}
-        ,{" "}
-        ,{"  "}
-        ,{"   "}
+    std::vector<std::pair<std::string,std::size_t>> decomp_strings = {
+        {"", 40}
+        ,{" ", 42}
+        ,{"  ", 44}
+        ,{"", 40}
     };
     std::string decomp_arena;
     std::size_t decomp_last_size = 0;
+    std::size_t decomp_last_capacity = 0;
+    std::size_t reserve_size = 50;
+    std::size_t RESERVE_EXTRA = 13;
+    decomp_arena.reserve(reserve_size);
     for (auto const& d : decomp_strings)
     {
-        std::string value = gzip::compress(d.data(), d.size());
+        std::string value = gzip::compress(d.first.data(),d.first.size());
         std::size_t c_size = decomp.decompress(decomp_arena,value.data(),value.size());
-        CHECK(c_size == d.size());
-        if (decomp_last_size > 0) {
-           CHECK(decomp_arena.size() >= decomp_last_size);
-        }
+        CHECK(c_size == d.first.size());
+        CHECK(decomp_arena.size() == d.second);
         decomp_last_size = decomp_arena.size();
+        decomp_last_capacity = decomp_arena.capacity();
+        CHECK(decomp_last_capacity == reserve_size+RESERVE_EXTRA);
     }
 
 }
