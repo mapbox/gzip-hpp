@@ -11,7 +11,7 @@ namespace gzip {
 
 static const unsigned long MAX_SIZE_BEFORE_COMPRESS = 2000000000; // 2GB decompressed
 
-// Compress method that takes a pointer an immutable character sequence (aka a string in C)
+// Compress method that takes a pointer an immutable character sequence
 std::string compress(const char* data,
                      std::size_t size,
                      int level = Z_DEFAULT_COMPRESSION,
@@ -27,9 +27,23 @@ std::string compress(const char* data,
     deflate_s.avail_in = 0;
     deflate_s.next_in = Z_NULL;
 
-    // 4th arg is 31 because of...? Also what tippecanoe is doing
-    // TODO: double check this
-    if (deflateInit2(&deflate_s, level, Z_DEFLATED, 31, 8, strategy) != Z_OK)
+    // The windowBits parameter is the base two logarithm of the window size (the size of the history buffer). 
+    // It should be in the range 8..15 for this version of the library.
+    // Larger values of this parameter result in better compression at the expense of memory usage.
+    // This range of values also changes the decoding type:
+    //  -8 to -15 for raw deflate
+    //  8 to 15 for zlib
+    // (8 to 15) + 16 for gzip
+    // (8 to 15) + 32 to automatically detect gzip/zlib header (decompression/inflate only)
+    constexpr int window_bits = 15 + 16; // gzip with windowbits of 15
+
+    constexpr int mem_level = 8;
+    // The memory requirements for deflate are (in bytes):
+    // (1 << (window_bits+2)) +  (1 << (mem_level+9))
+    // with a default value of 8 for mem_level and our window_bits of 15
+    // this is 128Kb
+    
+    if (deflateInit2(&deflate_s, level, Z_DEFLATED, window_bits, mem_level, strategy) != Z_OK)
     {
         throw std::runtime_error("deflate init failed");
     }
