@@ -5,6 +5,7 @@
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 #include <limits>
+#include <fstream>
 
 TEST_CASE("test version")
 {
@@ -292,7 +293,6 @@ TEST_CASE("round trip compression - gzip")
     }
 }
 
-
 TEST_CASE("low level interface works as expected")
 {
     // compress
@@ -352,4 +352,24 @@ TEST_CASE("low level interface works as expected")
         CHECK(decomp_last_capacity == reserve_size+RESERVE_EXTRA);
     }
 
+}
+
+TEST_CASE("test decompression size limit")
+{
+    std::string filename("./test/data/highly_compressed.gz");
+    std::ifstream stream(filename,std::ios_base::in|std::ios_base::binary);
+    if (!stream.is_open())
+    {
+        throw std::runtime_error("could not open: '" + filename + "'");
+    }
+    std::string str_compressed((std::istreambuf_iterator<char>(stream.rdbuf())),
+                    std::istreambuf_iterator<char>());
+    stream.close();
+
+    std::size_t limit = 20 * 1024 * 1024; // 20 Mb
+    // file should be about 500 mb uncompressed
+    gzip::Decompressor decomp(limit);
+    std::string output;
+    CHECK_THROWS(decomp.decompress(output, str_compressed.data(), str_compressed.size()));
+    CHECK(output.size() < limit);
 }

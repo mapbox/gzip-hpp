@@ -52,15 +52,21 @@ class Decompressor {
             throw std::runtime_error("size arg is too large to fit into unsigned int type x2");
         }
     #endif
-        if (size > max_)
+        if (size > max_ || (size * 2) > max_)
         {
             inflateEnd(&inflate_s);
             throw std::runtime_error("size may use more memory than intended when decompressing");
         }
         inflate_s.avail_in = static_cast<unsigned int>(size);
-        size_t size_uncompressed = 0;
+        std::size_t size_uncompressed = 0;
         do
         {
+            std::size_t resize_to = size_uncompressed + 2 * size;
+            if (resize_to > max_)
+            {
+                inflateEnd(&inflate_s);
+                throw std::runtime_error("size of output string will use more memory then intended when decompressing");
+            }
             output.resize(size_uncompressed + 2 * size);
             inflate_s.avail_out = static_cast<unsigned int>(2 * size);
             inflate_s.next_out = reinterpret_cast<Bytef*>(&output[0] + size_uncompressed);
