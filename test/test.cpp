@@ -330,10 +330,10 @@ TEST_CASE("low level interface works as expected")
     gzip::Decompressor decomp;
     // test re-used scratch space/arena during decompression
     std::vector<std::pair<std::string,std::size_t>> decomp_strings = {
-        {"", 40}
-        ,{" ", 42}
-        ,{"  ", 44}
-        ,{"", 40}
+        {"", 0}
+        ,{" ", 1}
+        ,{"  ", 2}
+        ,{"", 0}
     };
     std::string decomp_arena;
     std::size_t decomp_last_size = 0;

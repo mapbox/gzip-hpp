@@ -81,6 +81,7 @@ class Decompressor {
             size_uncompressed += (2 * size - inflate_s.avail_out);
         } while (inflate_s.avail_out == 0);
         inflateEnd(&inflate_s);
+        output.resize(size_uncompressed);
         return size_uncompressed;
     }
 
@@ -90,8 +91,7 @@ std::string decompress(const char * data, std::size_t size)
 {
     Decompressor decomp;
     std::string output;
-    std::size_t uncompressed_size = decomp.decompress(output,data,size);
-    output.resize(uncompressed_size);
+    decomp.decompress(output,data,size);
     return output;
 }
 

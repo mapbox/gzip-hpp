@@ -2,109 +2,75 @@
 #include <fstream>
 #include <gzip.hpp>
 
-auto BM_compress = [](benchmark::State& state, const char * data, size_t length) // NOLINT google-runtime-references
+static std::string open_file(std::string const& filename)
 {
-
-    if (state.thread_index == 0)
-    {
-
-    }
-    while (state.KeepRunning())
-    {
-        std::string value = gzip::compress(data, length);
-        benchmark::DoNotOptimize(value.data());
-        benchmark::ClobberMemory();
-    }
-    if (state.thread_index == 0)
-    {
-        // Teardown code here.
-    }
-};
-
-auto BM_decompress = [](benchmark::State& state, const char * data, size_t length) // NOLINT google-runtime-references
-{
-
-    if (state.thread_index == 0)
-    {
-
-    }
-    while (state.KeepRunning())
-    {
-        std::string value = gzip::decompress(data, length);
-        benchmark::DoNotOptimize(value.data());
-        benchmark::ClobberMemory();
-    }
-    if (state.thread_index == 0)
-    {
-        // Teardown code here.
-    }
-};
-
-
-auto BM_compress2 = [](benchmark::State& state, const char * data, size_t length) // NOLINT google-runtime-references
-{
-    gzip::Compressor comp;
-    std::string arena;
-
-    if (state.thread_index == 0)
-    {
-
-    }
-    while (state.KeepRunning())
-    {
-        std::size_t compressed_size = comp.compress(arena, data, length);
-        arena.resize(compressed_size);
-        benchmark::DoNotOptimize(arena.data());
-        benchmark::ClobberMemory();
-    }
-    if (state.thread_index == 0)
-    {
-        // Teardown code here.
-    }
-};
-
-auto BM_decompress2 = [](benchmark::State& state, const char * data, size_t length) // NOLINT google-runtime-references
-{
-
-    gzip::Decompressor decomp;
-    std::string arena;
-    if (state.thread_index == 0)
-    {
-
-    }
-    while (state.KeepRunning())
-    {
-        std::size_t uncompressed_size = decomp.decompress(arena, data, length);
-        arena.resize(uncompressed_size);
-        benchmark::DoNotOptimize(arena.data());
-        benchmark::ClobberMemory();
-    }
-    if (state.thread_index == 0)
-    {
-        // Teardown code here.
-    }
-};
-
-int main(int argc, char* argv[])
-{
-    std::string filename("./bench/14-4685-6265.mvt");
     std::ifstream stream(filename,std::ios_base::in|std::ios_base::binary);
     if (!stream.is_open())
     {
         throw std::runtime_error("could not open: '" + filename + "'");
     }
-    std::string str_uncompressed((std::istreambuf_iterator<char>(stream.rdbuf())),
+    std::string data((std::istreambuf_iterator<char>(stream.rdbuf())),
                     std::istreambuf_iterator<char>());
     stream.close();
-
-    std::string str_compressed = gzip::compress(str_uncompressed.data(), str_uncompressed.size());
-
-    benchmark::RegisterBenchmark("compress high level API", BM_compress, str_uncompressed.data(), str_uncompressed.size())->Threads(1)->Threads(2)->Threads(4)->Threads(8); // NOLINT clang-analyzer-cplusplus.NewDeleteLeaks
-    benchmark::RegisterBenchmark("compress low level API", BM_compress2, str_uncompressed.data(), str_uncompressed.size())->Threads(1)->Threads(2)->Threads(4)->Threads(8); // NOLINT clang-analyzer-cplusplus.NewDeleteLeaks
-    benchmark::RegisterBenchmark("decompress high level API", BM_decompress, str_compressed.data(), str_compressed.size())->Threads(1)->Threads(2)->Threads(4)->Threads(8); // NOLINT clang-analyzer-cplusplus.NewDeleteLeak
-    benchmark::RegisterBenchmark("decompress low level API", BM_decompress2, str_compressed.data(), str_compressed.size())->Threads(1)->Threads(2)->Threads(4)->Threads(8); // NOLINT clang-analyzer-cplusplus.NewDeleteLeak
-    benchmark::Initialize(&argc, argv);
-    benchmark::RunSpecifiedBenchmarks();
-
-    return 0;
+    return data;
 }
+
+static void BM_compress(benchmark::State& state) // NOLINT google-runtime-references
+{
+    std::string buffer = open_file("./bench/14-4685-6265.mvt");
+    while (state.KeepRunning())
+    {
+        std::string value = gzip::compress(buffer.data(), buffer.size());
+        benchmark::DoNotOptimize(value.data());
+    }
+};
+
+BENCHMARK(BM_compress);
+
+static void BM_decompress(benchmark::State& state) // NOLINT google-runtime-references
+{
+    std::string buffer_uncompressed = open_file("./bench/14-4685-6265.mvt");
+    std::string buffer = gzip::compress(buffer_uncompressed.data(), buffer_uncompressed.size());
+    while (state.KeepRunning())
+    {
+        std::string value = gzip::decompress(buffer.data(), buffer.size());
+        benchmark::DoNotOptimize(value.data());
+        benchmark::ClobberMemory();
+    }
+};
+
+BENCHMARK(BM_decompress);
+
+static void BM_compress2(benchmark::State& state) // NOLINT google-runtime-references
+{
+    std::string buffer = open_file("./bench/14-4685-6265.mvt");
+    gzip::Compressor comp;
+
+    while (state.KeepRunning())
+    {
+        std::string output;
+        comp.compress(output, buffer.data(), buffer.size());
+    }
+};
+
+BENCHMARK(BM_compress2);
+
+static void BM_decompress2(benchmark::State& state) // NOLINT google-runtime-references
+{
+
+    std::string buffer_uncompressed = open_file("./bench/14-4685-6265.mvt");
+    std::string buffer = gzip::compress(buffer_uncompressed.data(), buffer_uncompressed.size());
+    gzip::Decompressor decomp;
+    while (state.KeepRunning())
+    {
+        std::string output;
+        decomp.decompress(output, buffer.data(), buffer.size());
+    }
+};
+
+BENCHMARK(BM_decompress2);
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+BENCHMARK_MAIN();
+#pragma GCC diagnostic pop
