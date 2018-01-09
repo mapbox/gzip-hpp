@@ -41,7 +41,7 @@ static void BM_decompress(benchmark::State& state) // NOLINT google-runtime-refe
 
 BENCHMARK(BM_decompress);
 
-static void BM_compress2(benchmark::State& state) // NOLINT google-runtime-references
+static void BM_compress_class(benchmark::State& state) // NOLINT google-runtime-references
 {
     std::string buffer = open_file("./bench/14-4685-6265.mvt");
     gzip::Compressor comp;
@@ -53,14 +53,31 @@ static void BM_compress2(benchmark::State& state) // NOLINT google-runtime-refer
     }
 };
 
-BENCHMARK(BM_compress2);
+BENCHMARK(BM_compress_class);
 
-static void BM_decompress2(benchmark::State& state) // NOLINT google-runtime-references
+static void BM_compress_class_no_reallocations(benchmark::State& state) // NOLINT google-runtime-references
+{
+    std::string buffer = open_file("./bench/14-4685-6265.mvt");
+    gzip::Compressor comp;
+    std::string output;
+    // Run once prior to pre-allocate
+    comp.compress(output, buffer.data(), buffer.size());
+
+    while (state.KeepRunning())
+    {
+        comp.compress(output, buffer.data(), buffer.size());
+    }
+};
+
+BENCHMARK(BM_compress_class_no_reallocations);
+
+static void BM_decompress_class(benchmark::State& state) // NOLINT google-runtime-references
 {
 
     std::string buffer_uncompressed = open_file("./bench/14-4685-6265.mvt");
     std::string buffer = gzip::compress(buffer_uncompressed.data(), buffer_uncompressed.size());
     gzip::Decompressor decomp;
+
     while (state.KeepRunning())
     {
         std::string output;
@@ -68,7 +85,25 @@ static void BM_decompress2(benchmark::State& state) // NOLINT google-runtime-ref
     }
 };
 
-BENCHMARK(BM_decompress2);
+BENCHMARK(BM_decompress_class);
+
+static void BM_decompress_class_no_reallocations(benchmark::State& state) // NOLINT google-runtime-references
+{
+
+    std::string buffer_uncompressed = open_file("./bench/14-4685-6265.mvt");
+    std::string buffer = gzip::compress(buffer_uncompressed.data(), buffer_uncompressed.size());
+    gzip::Decompressor decomp;
+    std::string output;
+    // Run once prior to pre-allocate
+    decomp.decompress(output, buffer.data(), buffer.size());
+
+    while (state.KeepRunning())
+    {
+        decomp.decompress(output, buffer.data(), buffer.size());
+    }
+};
+
+BENCHMARK(BM_decompress_class_no_reallocations);
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
