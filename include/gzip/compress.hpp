@@ -27,7 +27,7 @@ std::string compress(const char* data,
     deflate_s.avail_in = 0;
     deflate_s.next_in = Z_NULL;
 
-    // The windowBits parameter is the base two logarithm of the window size (the size of the history buffer). 
+    // The windowBits parameter is the base two logarithm of the window size (the size of the history buffer).
     // It should be in the range 8..15 for this version of the library.
     // Larger values of this parameter result in better compression at the expense of memory usage.
     // This range of values also changes the decoding type:
@@ -42,7 +42,7 @@ std::string compress(const char* data,
     // (1 << (window_bits+2)) +  (1 << (mem_level+9))
     // with a default value of 8 for mem_level and our window_bits of 15
     // this is 128Kb
-    
+
     if (deflateInit2(&deflate_s, level, Z_DEFLATED, window_bits, mem_level, strategy) != Z_OK)
     {
         throw std::runtime_error("deflate init failed");

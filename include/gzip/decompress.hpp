@@ -25,7 +25,7 @@ std::string decompress(const char* data, std::size_t size)
     inflate_s.avail_in = 0;
     inflate_s.next_in = Z_NULL;
 
-    // The windowBits parameter is the base two logarithm of the window size (the size of the history buffer). 
+    // The windowBits parameter is the base two logarithm of the window size (the size of the history buffer).
     // It should be in the range 8..15 for this version of the library.
     // Larger values of this parameter result in better compression at the expense of memory usage.
     // This range of values also changes the decoding type:
@@ -34,7 +34,7 @@ std::string decompress(const char* data, std::size_t size)
     // (8 to 15) + 16 for gzip
     // (8 to 15) + 32 to automatically detect gzip/zlib header
     constexpr int window_bits = 15 + 32; // auto with windowbits of 15
-    
+
     if (inflateInit2(&inflate_s, window_bits) != Z_OK)
     {
         throw std::runtime_error("inflate init failed");
