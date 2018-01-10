@@ -23,7 +23,7 @@ static void BM_compress(benchmark::State& state) // NOLINT google-runtime-refere
         std::string value = gzip::compress(buffer.data(), buffer.size());
         benchmark::DoNotOptimize(value.data());
     }
-};
+}
 
 BENCHMARK(BM_compress);
 
@@ -37,7 +37,7 @@ static void BM_decompress(benchmark::State& state) // NOLINT google-runtime-refe
         benchmark::DoNotOptimize(value.data());
         benchmark::ClobberMemory();
     }
-};
+}
 
 BENCHMARK(BM_decompress);
 
@@ -51,7 +51,7 @@ static void BM_compress_class(benchmark::State& state) // NOLINT google-runtime-
         std::string output;
         comp.compress(output, buffer.data(), buffer.size());
     }
-};
+}
 
 BENCHMARK(BM_compress_class);
 
@@ -67,7 +67,7 @@ static void BM_compress_class_no_reallocations(benchmark::State& state) // NOLIN
     {
         comp.compress(output, buffer.data(), buffer.size());
     }
-};
+}
 
 BENCHMARK(BM_compress_class_no_reallocations);
 
@@ -83,7 +83,7 @@ static void BM_decompress_class(benchmark::State& state) // NOLINT google-runtim
         std::string output;
         decomp.decompress(output, buffer.data(), buffer.size());
     }
-};
+}
 
 BENCHMARK(BM_decompress_class);
 
@@ -101,7 +101,7 @@ static void BM_decompress_class_no_reallocations(benchmark::State& state) // NOL
     {
         decomp.decompress(output, buffer.data(), buffer.size());
     }
-};
+}
 
 BENCHMARK(BM_decompress_class_no_reallocations);
 
