@@ -18,7 +18,7 @@ static std::string open_file(std::string const& filename)
 static void BM_compress(benchmark::State& state) // NOLINT google-runtime-references
 {
     std::string buffer = open_file("./bench/14-4685-6265.mvt");
-    while (state.KeepRunning())
+    for (auto _ : state)
     {
         std::string value = gzip::compress(buffer.data(), buffer.size());
         benchmark::DoNotOptimize(value.data());
@@ -31,7 +31,7 @@ static void BM_decompress(benchmark::State& state) // NOLINT google-runtime-refe
 {
     std::string buffer_uncompressed = open_file("./bench/14-4685-6265.mvt");
     std::string buffer = gzip::compress(buffer_uncompressed.data(), buffer_uncompressed.size());
-    while (state.KeepRunning())
+    for (auto _ : state)
     {
         std::string value = gzip::decompress(buffer.data(), buffer.size());
         benchmark::DoNotOptimize(value.data());
@@ -46,7 +46,7 @@ static void BM_compress_class(benchmark::State& state) // NOLINT google-runtime-
     std::string buffer = open_file("./bench/14-4685-6265.mvt");
     gzip::Compressor comp;
 
-    while (state.KeepRunning())
+    for (auto _ : state)
     {
         std::string output;
         comp.compress(output, buffer.data(), buffer.size());
@@ -63,7 +63,7 @@ static void BM_compress_class_no_reallocations(benchmark::State& state) // NOLIN
     // Run once prior to pre-allocate
     comp.compress(output, buffer.data(), buffer.size());
 
-    while (state.KeepRunning())
+    for (auto _ : state)
     {
         comp.compress(output, buffer.data(), buffer.size());
     }
@@ -78,7 +78,7 @@ static void BM_decompress_class(benchmark::State& state) // NOLINT google-runtim
     std::string buffer = gzip::compress(buffer_uncompressed.data(), buffer_uncompressed.size());
     gzip::Decompressor decomp;
 
-    while (state.KeepRunning())
+    for (auto _ : state)
     {
         std::string output;
         decomp.decompress(output, buffer.data(), buffer.size());
@@ -97,7 +97,7 @@ static void BM_decompress_class_no_reallocations(benchmark::State& state) // NOL
     // Run once prior to pre-allocate
     decomp.decompress(output, buffer.data(), buffer.size());
 
-    while (state.KeepRunning())
+    for (auto _ : state)
     {
         decomp.decompress(output, buffer.data(), buffer.size());
     }
