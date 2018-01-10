@@ -26,5 +26,4 @@ inline bool is_compressed(std::string const& input)
 {
     return is_compressed(input.data(), input.size());
 }
-
 }

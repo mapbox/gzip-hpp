@@ -16,7 +16,7 @@ TEST_CASE("successful compress")
 {
     std::string data = "hello hello hello hello";
 
-    SECTION("pointer") 
+    SECTION("pointer")
     {
         const char* pointer = data.data();
         std::string value = gzip::compress(pointer, data.size());
