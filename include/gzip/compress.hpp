@@ -9,21 +9,25 @@
 
 namespace gzip {
 
-class Compressor {
+class Compressor
+{
     std::size_t max_;
     int level_;
     int strategy_;
- public:
+
+  public:
     Compressor(int level = Z_DEFAULT_COMPRESSION,
                int strategy = Z_DEFAULT_STRATEGY,
                std::size_t max_bytes = 2000000000) // by default refuse operation if uncompressed data is > 2GB
-     : max_(max_bytes),
-       level_(level),
-       strategy_(strategy) {}
+        : max_(max_bytes),
+          level_(level),
+          strategy_(strategy)
+    {
+    }
 
-    void compress(std::string & output,
-                         const char* data,
-                         std::size_t size) const
+    void compress(std::string& output,
+                  const char* data,
+                  std::size_t size) const
     {
 
 #ifdef DEBUG
@@ -92,18 +96,24 @@ class Compressor {
         deflateEnd(&deflate_s);
         output.resize(size_compressed);
     }
-
 };
 
 inline std::string compress(const char* data,
-                     std::size_t size,
-                     int level = Z_DEFAULT_COMPRESSION,
-                     int strategy = Z_DEFAULT_STRATEGY)
+                            std::size_t size,
+                            int level = Z_DEFAULT_COMPRESSION,
+                            int strategy = Z_DEFAULT_STRATEGY)
 {
-    Compressor comp(level,strategy);
+    Compressor comp(level, strategy);
     std::string output;
-    comp.compress(output,data,size);
+    comp.compress(output, data, size);
     return output;
+}
+
+inline std::string compress(std::string const& input,
+                            int level = Z_DEFAULT_COMPRESSION,
+                            int strategy = Z_DEFAULT_STRATEGY)
+{
+    return compress(input.data(), input.size(), level, strategy);
 }
 
 } // end gzip namespace

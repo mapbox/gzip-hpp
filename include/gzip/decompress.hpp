@@ -9,15 +9,19 @@
 
 namespace gzip {
 
-class Decompressor {
+class Decompressor
+{
     std::size_t max_;
- public:
-    Decompressor(std::size_t max_bytes=1000000000) // by default refuse operation if compressed data is > 1GB
-     : max_(max_bytes) {}
 
-    void decompress(std::string & output,
-                           const char * data,
-                           std::size_t size) const
+  public:
+    Decompressor(std::size_t max_bytes = 1000000000) // by default refuse operation if compressed data is > 1GB
+        : max_(max_bytes)
+    {
+    }
+
+    void decompress(std::string& output,
+                    const char* data,
+                    std::size_t size) const
     {
         z_stream inflate_s;
 
@@ -26,7 +30,7 @@ class Decompressor {
         inflate_s.opaque = Z_NULL;
         inflate_s.avail_in = 0;
         inflate_s.next_in = Z_NULL;
-        
+
         // The windowBits parameter is the base two logarithm of the window size (the size of the history buffer).
         // It should be in the range 8..15 for this version of the library.
         // Larger values of this parameter result in better compression at the expense of memory usage.
@@ -43,7 +47,7 @@ class Decompressor {
         }
         inflate_s.next_in = reinterpret_cast<z_const Bytef*>(data);
 
-    #ifdef DEBUG
+#ifdef DEBUG
         // Verify if size (long type) input will fit into unsigned int, type used for zlib's avail_in
         std::uint64_t size_64 = size * 2;
         if (size_64 > std::numeric_limits<unsigned int>::max())
@@ -51,7 +55,7 @@ class Decompressor {
             inflateEnd(&inflate_s);
             throw std::runtime_error("size arg is too large to fit into unsigned int type x2");
         }
-    #endif
+#endif
         if (size > max_ || (size * 2) > max_)
         {
             inflateEnd(&inflate_s);
@@ -83,15 +87,19 @@ class Decompressor {
         inflateEnd(&inflate_s);
         output.resize(size_uncompressed);
     }
-
 };
 
-std::string decompress(const char * data, std::size_t size)
+inline std::string decompress(const char* data, std::size_t size)
 {
     Decompressor decomp;
     std::string output;
-    decomp.decompress(output,data,size);
+    decomp.decompress(output, data, size);
     return output;
+}
+
+inline std::string decompress(std::string const& input)
+{
+    return decompress(input.data(), input.size());
 }
 
 } // end gzip namespace
