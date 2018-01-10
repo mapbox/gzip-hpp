@@ -71,7 +71,7 @@ class Decompressor
                 inflateEnd(&inflate_s);
                 throw std::runtime_error("size of output string will use more memory then intended when decompressing");
             }
-            output.resize(size_uncompressed + 2 * size);
+            output.resize(resize_to);
             inflate_s.avail_out = static_cast<unsigned int>(2 * size);
             inflate_s.next_out = reinterpret_cast<Bytef*>(&output[0] + size_uncompressed);
             int ret = inflate(&inflate_s, Z_FINISH);
