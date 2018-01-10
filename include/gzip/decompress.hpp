@@ -15,7 +15,7 @@ class Decompressor {
     Decompressor(std::size_t max_bytes=1000000000) // by default refuse operation if compressed data is > 1GB
      : max_(max_bytes) {}
 
-    std::size_t decompress(std::string & output,
+    void decompress(std::string & output,
                            const char * data,
                            std::size_t size) const
     {
@@ -82,7 +82,6 @@ class Decompressor {
         } while (inflate_s.avail_out == 0);
         inflateEnd(&inflate_s);
         output.resize(size_uncompressed);
-        return size_uncompressed;
     }
 
 };

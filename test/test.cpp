@@ -300,7 +300,8 @@ TEST_CASE("low level interface works as expected")
     std::string result1 = gzip::compress(data.data(),data.size());
     gzip::Compressor comp;
     std::string result2;
-    std::size_t compressed_size = comp.compress(result2,data.data(),data.size());
+    comp.compress(result2,data.data(),data.size());
+    std::size_t compressed_size = result2.size();
     CHECK(result1.size() == compressed_size);
     std::string result2_trimmed = result2.substr(0,compressed_size);
     CHECK(result1 == result2_trimmed);
@@ -318,7 +319,8 @@ TEST_CASE("low level interface works as expected")
     std::size_t last_size = 0;
     for (auto const& d : strings)
     {
-        std::size_t c_size = comp.compress(arena,d.first.data(),d.first.size());
+        comp.compress(arena,d.first.data(),d.first.size());
+        std::size_t c_size = arena.size();
         CHECK(c_size == d.second);
         if (last_size > 0) {
            CHECK(arena.size() >= last_size);
@@ -344,7 +346,8 @@ TEST_CASE("low level interface works as expected")
     for (auto const& d : decomp_strings)
     {
         std::string value = gzip::compress(d.first.data(),d.first.size());
-        std::size_t c_size = decomp.decompress(decomp_arena,value.data(),value.size());
+        decomp.decompress(decomp_arena,value.data(),value.size());
+        std::size_t c_size = decomp_arena.size();
         CHECK(c_size == d.first.size());
         CHECK(decomp_arena.size() == d.second);
         decomp_last_size = decomp_arena.size();

@@ -21,7 +21,7 @@ class Compressor {
        level_(level),
        strategy_(strategy) {}
 
-    inline std::size_t compress(std::string & output,
+    void compress(std::string & output,
                          const char* data,
                          std::size_t size) const
     {
@@ -90,7 +90,7 @@ class Compressor {
         } while (deflate_s.avail_out == 0);
 
         deflateEnd(&deflate_s);
-        return size_compressed;
+        output.resize(size_compressed);
     }
 
 };
@@ -102,8 +102,7 @@ inline std::string compress(const char* data,
 {
     Compressor comp(level,strategy);
     std::string output;
-    std::size_t compressed_size = comp.compress(output,data,size);
-    output.resize(compressed_size);
+    comp.compress(output,data,size);
     return output;
 }
 
