@@ -2,6 +2,7 @@
 
 // zlib
 #include <zlib.h>
+
 // std
 #include <limits>
 #include <stdexcept>
@@ -25,7 +26,8 @@ class Compressor
     {
     }
 
-    void compress(std::string& output,
+    template <typename InputType>
+    void compress(InputType & output,
                   const char* data,
                   std::size_t size) const
     {
@@ -65,10 +67,13 @@ class Compressor
         // with a default value of 8 for mem_level and our window_bits of 15
         // this is 128Kb
 
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wold-style-cast"
         if (deflateInit2(&deflate_s, level_, Z_DEFLATED, window_bits, mem_level, strategy_) != Z_OK)
         {
             throw std::runtime_error("deflate init failed");
         }
+        #pragma GCC diagnostic pop
 
         deflate_s.next_in = reinterpret_cast<z_const Bytef*>(data);
         deflate_s.avail_in = static_cast<unsigned int>(size);
