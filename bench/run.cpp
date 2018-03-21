@@ -4,13 +4,13 @@
 
 static std::string open_file(std::string const& filename)
 {
-    std::ifstream stream(filename,std::ios_base::in|std::ios_base::binary);
+    std::ifstream stream(filename, std::ios_base::in | std::ios_base::binary);
     if (!stream.is_open())
     {
         throw std::runtime_error("could not open: '" + filename + "'");
     }
     std::string data((std::istreambuf_iterator<char>(stream.rdbuf())),
-                    std::istreambuf_iterator<char>());
+                     std::istreambuf_iterator<char>());
     stream.close();
     return data;
 }
