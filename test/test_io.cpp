@@ -1,16 +1,7 @@
-#include <gzip.hpp>
-
-#include <cassert>
-#include <iostream>
-#define CATCH_CONFIG_MAIN
 #include <catch.hpp>
+#include <gzip.hpp>
 #include <fstream>
 #include <limits>
-
-TEST_CASE("test version")
-{
-    REQUIRE(GZIP_VERSION_STRING == std::string("1.0.0"));
-}
 
 TEST_CASE("successful compress")
 {
