@@ -14,15 +14,12 @@ class Compressor
 {
     std::size_t max_;
     int level_;
-    int strategy_;
 
   public:
     Compressor(int level = Z_DEFAULT_COMPRESSION,
-               int strategy = Z_DEFAULT_STRATEGY,
                std::size_t max_bytes = 2000000000) // by default refuse operation if uncompressed data is > 2GB
         : max_(max_bytes),
-          level_(level),
-          strategy_(strategy)
+          level_(level)
     {
     }
 
@@ -69,7 +66,7 @@ class Compressor
 
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wold-style-cast"
-        if (deflateInit2(&deflate_s, level_, Z_DEFLATED, window_bits, mem_level, strategy_) != Z_OK)
+        if (deflateInit2(&deflate_s, level_, Z_DEFLATED, window_bits, mem_level, Z_DEFAULT_STRATEGY) != Z_OK)
         {
             throw std::runtime_error("deflate init failed");
         }
@@ -105,10 +102,9 @@ class Compressor
 
 inline std::string compress(const char* data,
                             std::size_t size,
-                            int level = Z_DEFAULT_COMPRESSION,
-                            int strategy = Z_DEFAULT_STRATEGY)
+                            int level = Z_DEFAULT_COMPRESSION)
 {
-    Compressor comp(level, strategy);
+    Compressor comp(level);
     std::string output;
     comp.compress(output, data, size);
     return output;

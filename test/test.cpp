@@ -55,8 +55,7 @@ TEST_CASE("successful decompress - pointer")
     const char* pointer = data.data();
     std::string compressed_data = gzip::compress(pointer, data.size());
     const char* compressed_pointer = compressed_data.data();
-
-    std::string value = gzip::decompress(compressed_pointer, data.size());
+    std::string value = gzip::decompress(compressed_pointer, compressed_data.size());
     REQUIRE(data == value);
 }
 
@@ -90,193 +89,41 @@ TEST_CASE("round trip compression - gzip")
 {
     const std::string data("this is a sentence that will be compressed into something");
 
-    CHECK(!gzip::is_compressed(data));
-
-    int strategy;
-
-    SECTION("strategy - invalid compression")
-    {
-        strategy = 99;
-        int level = Z_DEFAULT_COMPRESSION;
-
-        CHECK_THROWS(gzip::compress(data, level, strategy));
-    }
+    CHECK(!gzip::is_compressed(data.data(),data.size()));
 
     SECTION("compression level - invalid")
     {
-        strategy = Z_DEFAULT_STRATEGY;
         int level = 99;
 
-        CHECK_THROWS(gzip::compress(data, level, strategy));
+        CHECK_THROWS(gzip::compress(data.data(), data.size(), level));
     }
 
-    SECTION("strategy - default")
+    SECTION("no compression")
     {
-        strategy = Z_DEFAULT_STRATEGY;
-
-        SECTION("no compression")
-        {
-            int level = Z_NO_COMPRESSION;
-            std::string compressed_data = gzip::compress(data, level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
-            std::string new_data = gzip::decompress(compressed_data);
-            CHECK(data == new_data);
-        }
-
-        SECTION("default compression level")
-        {
-            int level = Z_DEFAULT_COMPRESSION;
-            std::string compressed_data = gzip::compress(data, level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
-            std::string new_data = gzip::decompress(compressed_data);
-            CHECK(data == new_data);
-        }
-
-        SECTION("compression level -- min to max")
-        {
-            for (int level = Z_BEST_SPEED; level <= Z_BEST_COMPRESSION; ++level)
-            {
-                std::string compressed_data = gzip::compress(data, level, strategy);
-                CHECK(gzip::is_compressed(compressed_data));
-                std::string new_data = gzip::decompress(compressed_data);
-                CHECK(data == new_data);
-            }
-        }
+        int level = Z_NO_COMPRESSION;
+        std::string compressed_data = gzip::compress(data.data(),data.size());
+        CHECK(gzip::is_compressed(compressed_data.data(),compressed_data.size()));
+        std::string new_data = gzip::decompress(compressed_data.data(),compressed_data.size());
+        CHECK(data == new_data);
     }
 
-    SECTION("strategy - filtered")
+    SECTION("default compression level")
     {
-        strategy = Z_FILTERED;
-
-        SECTION("no compression")
-        {
-            int level = Z_NO_COMPRESSION;
-            std::string compressed_data = gzip::compress(data, level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
-            std::string new_data = gzip::decompress(compressed_data);
-            CHECK(data == new_data);
-        }
-
-        SECTION("default compression level")
-        {
-            int level = Z_DEFAULT_COMPRESSION;
-            std::string compressed_data = gzip::compress(data, level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
-            std::string new_data = gzip::decompress(compressed_data);
-            CHECK(data == new_data);
-        }
-
-        SECTION("compression level -- min to max")
-        {
-            for (int level = Z_BEST_SPEED; level <= Z_BEST_COMPRESSION; ++level)
-            {
-                std::string compressed_data = gzip::compress(data, level, strategy);
-                CHECK(gzip::is_compressed(compressed_data));
-                std::string new_data = gzip::decompress(compressed_data);
-                CHECK(data == new_data);
-            }
-        }
+        int level = Z_DEFAULT_COMPRESSION;
+        std::string compressed_data = gzip::compress(data.data(),data.size());
+        CHECK(gzip::is_compressed(compressed_data.data(),compressed_data.size()));
+        std::string new_data = gzip::decompress(compressed_data.data(),compressed_data.size());
+        CHECK(data == new_data);
     }
 
-    SECTION("strategy - huffman only")
+    SECTION("compression level -- min to max")
     {
-        strategy = Z_HUFFMAN_ONLY;
-
-        SECTION("no compression")
+        for (int level = Z_BEST_SPEED; level <= Z_BEST_COMPRESSION; ++level)
         {
-            int level = Z_NO_COMPRESSION;
-            std::string compressed_data = gzip::compress(data, level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
-            std::string new_data = gzip::decompress(compressed_data);
+            std::string compressed_data = gzip::compress(data.data(),data.size());
+            CHECK(gzip::is_compressed(compressed_data.data(),compressed_data.size()));
+            std::string new_data = gzip::decompress(compressed_data.data(),compressed_data.size());
             CHECK(data == new_data);
-        }
-
-        SECTION("default compression level")
-        {
-            int level = Z_DEFAULT_COMPRESSION;
-            std::string compressed_data = gzip::compress(data, level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
-            std::string new_data = gzip::decompress(compressed_data);
-            CHECK(data == new_data);
-        }
-
-        SECTION("compression level -- min to max")
-        {
-            for (int level = Z_BEST_SPEED; level <= Z_BEST_COMPRESSION; ++level)
-            {
-                std::string compressed_data = gzip::compress(data, level, strategy);
-                CHECK(gzip::is_compressed(compressed_data));
-                std::string new_data = gzip::decompress(compressed_data);
-                CHECK(data == new_data);
-            }
-        }
-    }
-
-    SECTION("strategy - rle")
-    {
-        strategy = Z_RLE;
-
-        SECTION("no compression")
-        {
-            int level = Z_NO_COMPRESSION;
-            std::string compressed_data = gzip::compress(data, level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
-            std::string new_data = gzip::decompress(compressed_data);
-            CHECK(data == new_data);
-        }
-
-        SECTION("default compression level")
-        {
-            int level = Z_DEFAULT_COMPRESSION;
-            std::string compressed_data = gzip::compress(data, level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
-            std::string new_data = gzip::decompress(compressed_data);
-            CHECK(data == new_data);
-        }
-
-        SECTION("compression level -- min to max")
-        {
-            for (int level = Z_BEST_SPEED; level <= Z_BEST_COMPRESSION; ++level)
-            {
-                std::string compressed_data = gzip::compress(data, level, strategy);
-                CHECK(gzip::is_compressed(compressed_data));
-                std::string new_data = gzip::decompress(compressed_data);
-                CHECK(data == new_data);
-            }
-        }
-    }
-
-    SECTION("strategy - fixed")
-    {
-        strategy = Z_FIXED;
-
-        SECTION("no compression")
-        {
-            int level = Z_NO_COMPRESSION;
-            std::string compressed_data = gzip::compress(data, level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
-            std::string new_data = gzip::decompress(compressed_data);
-            CHECK(data == new_data);
-        }
-
-        SECTION("default compression level")
-        {
-            int level = Z_DEFAULT_COMPRESSION;
-            std::string compressed_data = gzip::compress(data, level, strategy);
-            CHECK(gzip::is_compressed(compressed_data));
-            std::string new_data = gzip::decompress(compressed_data);
-            CHECK(data == new_data);
-        }
-
-        SECTION("compression level -- min to max")
-        {
-            for (int level = Z_BEST_SPEED; level <= Z_BEST_COMPRESSION; ++level)
-            {
-                std::string compressed_data = gzip::compress(data, level, strategy);
-                CHECK(gzip::is_compressed(compressed_data));
-                std::string new_data = gzip::decompress(compressed_data);
-                CHECK(data == new_data);
-            }
         }
     }
 }

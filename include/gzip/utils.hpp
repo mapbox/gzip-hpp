@@ -1,7 +1,5 @@
 #include <cstdlib>
 
-#include <string>
-
 namespace gzip {
 
 // These live in gzip.hpp because it doesnt need to use deps.
@@ -22,8 +20,4 @@ inline bool is_compressed(const char* data, std::size_t size)
                (static_cast<uint8_t>(data[0]) == 0x1F && static_cast<uint8_t>(data[1]) == 0x8B));
 }
 
-inline bool is_compressed(std::string const& input)
-{
-    return is_compressed(input.data(), input.size());
-}
 }
