@@ -59,10 +59,10 @@ class Compressor
         constexpr int window_bits = 15 + 16; // gzip with windowbits of 15
 
         constexpr int mem_level = 8;
-// The memory requirements for deflate are (in bytes):
-// (1 << (window_bits+2)) +  (1 << (mem_level+9))
-// with a default value of 8 for mem_level and our window_bits of 15
-// this is 128Kb
+        // The memory requirements for deflate are (in bytes):
+        // (1 << (window_bits+2)) +  (1 << (mem_level+9))
+        // with a default value of 8 for mem_level and our window_bits of 15
+        // this is 128Kb
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
@@ -110,4 +110,4 @@ inline std::string compress(const char* data,
     return output;
 }
 
-} // end gzip namespace
+} // namespace gzip
