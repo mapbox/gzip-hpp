@@ -29,7 +29,7 @@ TEST_CASE("fail compress - throws max size limit")
     std::string data = "hello hello hello hello";
     const char* pointer = data.data();
 
-    unsigned long l = 2000000001;
+    std::uint64_t l = 2000000001;
 
     CHECK_THROWS_WITH(gzip::compress(pointer, l), Catch::Contains("size may use more memory than intended when decompressing"));
 }
