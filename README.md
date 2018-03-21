@@ -33,12 +33,11 @@ std::string value = gzip::compress(node::Buffer::Data(obj), node::Buffer::Length
 ```
 #### Compress
 ```c++
-// Optionally include compression level and strategy
+// Optionally include compression level
 std::size_t size; // No default value, but what happens when not passed??
 int level = Z_DEFAULT_COMPRESSION; // Z_DEFAULT_COMPRESSION is the default if no arg is passed
-int strategy = Z_DEFAULT_STRATEGY; // Z_DEFAULT_STRATEGY is the defaul if no arg is passed
 
-std::string compressed_data = gzip::compress(tile->data(), size, level, strategy);
+std::string compressed_data = gzip::compress(tile->data(), size, level);
 ```
 #### Decompress
 ```c++

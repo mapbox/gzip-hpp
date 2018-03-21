@@ -17,7 +17,7 @@ matrix:
           sources: [ 'ubuntu-toolchain-r-test' ]
           packages: [ 'libstdc++-5-dev' ]
     - os: linux
-      sudo: false
+      sudo: required # required to workaround https://github.com/mapbox/node-cpp-skel/issues/93
       env: CXX=clang++ CXXFLAGS="-fsanitize=address,undefined -fno-sanitize-recover=all"
       addons:
         apt:
