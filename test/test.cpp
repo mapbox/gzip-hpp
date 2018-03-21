@@ -23,11 +23,6 @@ TEST_CASE("successful compress")
         REQUIRE(!value.empty());
     }
 
-    SECTION("string")
-    {
-        std::string value = gzip::compress(data);
-        REQUIRE(!value.empty());
-    }
 }
 
 TEST_CASE("fail compress - throws max size limit")

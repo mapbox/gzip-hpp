@@ -114,11 +114,4 @@ inline std::string compress(const char* data,
     return output;
 }
 
-inline std::string compress(std::string const& input,
-                            int level = Z_DEFAULT_COMPRESSION,
-                            int strategy = Z_DEFAULT_STRATEGY)
-{
-    return compress(input.data(), input.size(), level, strategy);
-}
-
 } // end gzip namespace

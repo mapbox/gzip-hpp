@@ -102,9 +102,4 @@ inline std::string decompress(const char* data, std::size_t size)
     return output;
 }
 
-inline std::string decompress(std::string const& input)
-{
-    return decompress(input.data(), input.size());
-}
-
 } // end gzip namespace
