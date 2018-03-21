@@ -24,7 +24,7 @@ class Compressor
     }
 
     template <typename InputType>
-    void compress(InputType & output,
+    void compress(InputType& output,
                   const char* data,
                   std::size_t size) const
     {
@@ -59,18 +59,18 @@ class Compressor
         constexpr int window_bits = 15 + 16; // gzip with windowbits of 15
 
         constexpr int mem_level = 8;
-        // The memory requirements for deflate are (in bytes):
-        // (1 << (window_bits+2)) +  (1 << (mem_level+9))
-        // with a default value of 8 for mem_level and our window_bits of 15
-        // this is 128Kb
+// The memory requirements for deflate are (in bytes):
+// (1 << (window_bits+2)) +  (1 << (mem_level+9))
+// with a default value of 8 for mem_level and our window_bits of 15
+// this is 128Kb
 
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
         if (deflateInit2(&deflate_s, level_, Z_DEFLATED, window_bits, mem_level, Z_DEFAULT_STRATEGY) != Z_OK)
         {
             throw std::runtime_error("deflate init failed");
         }
-        #pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
 
         deflate_s.next_in = reinterpret_cast<z_const Bytef*>(data);
         deflate_s.avail_in = static_cast<unsigned int>(size);

@@ -22,7 +22,6 @@ TEST_CASE("successful compress")
         std::string value = gzip::compress(pointer, data.size());
         REQUIRE(!value.empty());
     }
-
 }
 
 TEST_CASE("fail compress - throws max size limit")
@@ -89,7 +88,7 @@ TEST_CASE("round trip compression - gzip")
 {
     const std::string data("this is a sentence that will be compressed into something");
 
-    CHECK(!gzip::is_compressed(data.data(),data.size()));
+    CHECK(!gzip::is_compressed(data.data(), data.size()));
 
     SECTION("compression level - invalid")
     {
@@ -101,18 +100,18 @@ TEST_CASE("round trip compression - gzip")
     SECTION("no compression")
     {
         int level = Z_NO_COMPRESSION;
-        std::string compressed_data = gzip::compress(data.data(),data.size());
-        CHECK(gzip::is_compressed(compressed_data.data(),compressed_data.size()));
-        std::string new_data = gzip::decompress(compressed_data.data(),compressed_data.size());
+        std::string compressed_data = gzip::compress(data.data(), data.size());
+        CHECK(gzip::is_compressed(compressed_data.data(), compressed_data.size()));
+        std::string new_data = gzip::decompress(compressed_data.data(), compressed_data.size());
         CHECK(data == new_data);
     }
 
     SECTION("default compression level")
     {
         int level = Z_DEFAULT_COMPRESSION;
-        std::string compressed_data = gzip::compress(data.data(),data.size());
-        CHECK(gzip::is_compressed(compressed_data.data(),compressed_data.size()));
-        std::string new_data = gzip::decompress(compressed_data.data(),compressed_data.size());
+        std::string compressed_data = gzip::compress(data.data(), data.size());
+        CHECK(gzip::is_compressed(compressed_data.data(), compressed_data.size()));
+        std::string new_data = gzip::decompress(compressed_data.data(), compressed_data.size());
         CHECK(data == new_data);
     }
 
@@ -120,9 +119,9 @@ TEST_CASE("round trip compression - gzip")
     {
         for (int level = Z_BEST_SPEED; level <= Z_BEST_COMPRESSION; ++level)
         {
-            std::string compressed_data = gzip::compress(data.data(),data.size());
-            CHECK(gzip::is_compressed(compressed_data.data(),compressed_data.size()));
-            std::string new_data = gzip::decompress(compressed_data.data(),compressed_data.size());
+            std::string compressed_data = gzip::compress(data.data(), data.size());
+            CHECK(gzip::is_compressed(compressed_data.data(), compressed_data.size()));
+            std::string new_data = gzip::decompress(compressed_data.data(), compressed_data.size());
             CHECK(data == new_data);
         }
     }

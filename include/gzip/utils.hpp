@@ -19,5 +19,4 @@ inline bool is_compressed(const char* data, std::size_t size)
                // gzip
                (static_cast<uint8_t>(data[0]) == 0x1F && static_cast<uint8_t>(data[1]) == 0x8B));
 }
-
 }
