@@ -90,7 +90,7 @@ TEST_CASE("round trip compression - gzip")
 
     SECTION("no compression")
     {
-        int level = Z_NO_COMPRESSION;
+        int level = 0;
         std::string compressed_data = gzip::compress(data.data(), data.size());
         CHECK(gzip::is_compressed(compressed_data.data(), compressed_data.size()));
         std::string new_data = gzip::decompress(compressed_data.data(), compressed_data.size());
@@ -99,7 +99,7 @@ TEST_CASE("round trip compression - gzip")
 
     SECTION("default compression level")
     {
-        int level = Z_DEFAULT_COMPRESSION;
+        int level = 6;
         std::string compressed_data = gzip::compress(data.data(), data.size());
         CHECK(gzip::is_compressed(compressed_data.data(), compressed_data.size()));
         std::string new_data = gzip::decompress(compressed_data.data(), compressed_data.size());
@@ -108,7 +108,7 @@ TEST_CASE("round trip compression - gzip")
 
     SECTION("compression level -- min to max")
     {
-        for (int level = Z_BEST_SPEED; level <= Z_BEST_COMPRESSION; ++level)
+        for (int level = 1; level <= 9; ++level)
         {
             std::string compressed_data = gzip::compress(data.data(), data.size());
             CHECK(gzip::is_compressed(compressed_data.data(), compressed_data.size()));
