@@ -14,7 +14,7 @@ class Compressor
 {
     std::size_t max_;
     int level_;
-    struct libdeflate_compressor * compressor_ = nullptr;
+    struct libdeflate_compressor* compressor_ = nullptr;
 
   public:
     Compressor(int level = 6,
@@ -23,7 +23,8 @@ class Compressor
           level_(level)
     {
         compressor_ = libdeflate_alloc_compressor(level_);
-        if (!compressor_) {
+        if (!compressor_)
+        {
             throw std::runtime_error("libdeflate_alloc_compressor failed");
         }
     }
@@ -54,18 +55,20 @@ class Compressor
             throw std::runtime_error("size may use more memory than intended when decompressing");
         }
 
-        std::size_t max_compressed_size = libdeflate_gzip_compress_bound(compressor_,size);
+        std::size_t max_compressed_size = libdeflate_gzip_compress_bound(compressor_, size);
         // TODO: sanity check this before allocating
-        if (max_compressed_size > output.size()) {
+        if (max_compressed_size > output.size())
+        {
             output.resize(max_compressed_size);
         }
 
         std::size_t actual_compressed_size = libdeflate_gzip_compress(compressor_,
-                                                  data,
-                                                  size,
-                                                  reinterpret_cast<void*>(&output[0]),
-                                                  max_compressed_size);
-        if (actual_compressed_size == 0) {
+                                                                      data,
+                                                                      size,
+                                                                      reinterpret_cast<void*>(&output[0]),
+                                                                      max_compressed_size);
+        if (actual_compressed_size == 0)
+        {
             throw std::runtime_error("actual_compressed_size 0");
         }
         output.resize(actual_compressed_size);

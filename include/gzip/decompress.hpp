@@ -13,25 +13,26 @@ namespace gzip {
 class Decompressor
 {
     std::size_t max_;
-    struct libdeflate_decompressor * decompressor_ = nullptr;
+    struct libdeflate_decompressor* decompressor_ = nullptr;
 
   public:
     Decompressor(std::size_t max_bytes = 1000000000) // by default refuse operation if compressed data is > 1GB
         : max_(max_bytes)
-     {
+    {
         decompressor_ = libdeflate_alloc_decompressor();
-        if (!decompressor_) {
+        if (!decompressor_)
+        {
             throw std::runtime_error("libdeflate_alloc_decompressor failed");
         }
     }
 
     ~Decompressor()
     {
-       if (decompressor_)
-       {
-           libdeflate_free_decompressor(decompressor_);
-       }
-     }
+        if (decompressor_)
+        {
+            libdeflate_free_decompressor(decompressor_);
+        }
+    }
 
     template <typename OutputType>
     void decompress(OutputType& output,
@@ -58,20 +59,24 @@ class Decompressor
         std::size_t uncompressed_size_guess = size * 2;
         output.resize(uncompressed_size_guess);
         enum libdeflate_result result = libdeflate_gzip_decompress(decompressor_,
-                                            data,
-                                            size,
-                                            static_cast<void*>(&output[0]),
-                                            uncompressed_size_guess, &actual_size);
-        if (result == LIBDEFLATE_INSUFFICIENT_SPACE) {
+                                                                   data,
+                                                                   size,
+                                                                   static_cast<void*>(&output[0]),
+                                                                   uncompressed_size_guess, &actual_size);
+        if (result == LIBDEFLATE_INSUFFICIENT_SPACE)
+        {
             throw std::runtime_error("no space: did not succeed");
         }
-        else if (result == LIBDEFLATE_SHORT_OUTPUT) {
+        else if (result == LIBDEFLATE_SHORT_OUTPUT)
+        {
             throw std::runtime_error("short output: did not succeed");
         }
-        else if (result == LIBDEFLATE_BAD_DATA) {
+        else if (result == LIBDEFLATE_BAD_DATA)
+        {
             throw std::runtime_error("bad data: did not succeed");
         }
-        else if (result != LIBDEFLATE_SUCCESS) {
+        else if (result != LIBDEFLATE_SUCCESS)
+        {
             throw std::runtime_error("did not succeed");
         }
         output.resize(actual_size);
