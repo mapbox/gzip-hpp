@@ -1,7 +1,9 @@
 #include <catch.hpp>
 #include <fstream>
-#include <gzip.hpp>
 #include <limits>
+#include <gzip/compress.hpp>
+#include <gzip/decompress.hpp>
+#include <gzip/utils.hpp>
 
 TEST_CASE("successful compress")
 {

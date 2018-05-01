@@ -4,7 +4,12 @@ Gzip C++ lib for gzip compression and decompression. Extracted from [mapnik-vect
 
 ## Usage
 ```c++
-#include <gzip.hpp>
+// Include the specific gzip headers your code needs, for example...
+#include <gzip/compress.hpp>
+#include <gzip/config.hpp>
+#include <gzip/decompress.hpp>
+#include <gzip/utils.hpp>
+#include <gzip/version.hpp>
 
 // All function calls must pass in a pointer of an 
 // immutable character sequence (aka a string in C) and its size
