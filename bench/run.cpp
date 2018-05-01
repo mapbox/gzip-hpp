@@ -1,6 +1,7 @@
 #include <benchmark/benchmark.h>
 #include <fstream>
-#include <gzip.hpp>
+#include <gzip/compress.hpp>
+#include <gzip/decompress.hpp>
 
 static std::string open_file(std::string const& filename)
 {
