@@ -1,5 +1,5 @@
 #include <catch.hpp>
-#include <gzip.hpp>
+#include <gzip/version.hpp>
 
 TEST_CASE("test version")
 {
