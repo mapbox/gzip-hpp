@@ -47,7 +47,10 @@ add_executable(unit-tests ${TEST_SOURCES})
 find_package(Threads REQUIRED)
 file(GLOB BENCH_SOURCES bench/*.cpp)
 add_executable(bench-tests ${BENCH_SOURCES})
+file(GLOB GZIP_SOURCES bin/*.cpp)
+add_executable(gzip ${GZIP_SOURCES})
 
 # link zlib static library to the unit-tests binary so the tests know where to find the zlib impl code
+target_link_libraries(gzip ${MASON_PACKAGE_zlib_STATIC_LIBS})
 target_link_libraries(unit-tests ${MASON_PACKAGE_zlib_STATIC_LIBS})
 target_link_libraries(bench-tests ${MASON_PACKAGE_benchmark_STATIC_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${MASON_PACKAGE_zlib_STATIC_LIBS})
