@@ -56,7 +56,7 @@ class Decompressor
         // https://github.com/kaorimatz/libdeflate-ruby/blob/0e33da96cdaad3162f03ec924b25b2f4f2847538/ext/libdeflate/libdeflate_ext.c#L340
         // https://github.com/ebiggers/libdeflate/commit/5a9d25a8922e2d74618fba96e56db4fe145510f4
         std::size_t actual_size;
-        std::size_t uncompressed_size_guess = size * 3;
+        std::size_t uncompressed_size_guess = size * 4;
         output.resize(uncompressed_size_guess);
         enum libdeflate_result result = libdeflate_gzip_decompress(decompressor_,
                                                                    data,
