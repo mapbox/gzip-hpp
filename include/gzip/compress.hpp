@@ -65,7 +65,7 @@ class Compressor
         std::size_t actual_compressed_size = libdeflate_gzip_compress(compressor_,
                                                                       data,
                                                                       size,
-                                                                      reinterpret_cast<void*>(&output[0]),
+                                                                      const_cast<char*>(output.data()),
                                                                       max_compressed_size);
         if (actual_compressed_size == 0)
         {
