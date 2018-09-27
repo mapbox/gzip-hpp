@@ -130,7 +130,7 @@ TEST_CASE("test decompression size limit")
                                std::istreambuf_iterator<char>());
     stream.close();
 
-    std::size_t limit = 20 * 1024 * 1024; // 20 Mb
+    std::size_t limit = 500 * 1024 * 1024; // 500 Mb
     // file should be about 500 mb uncompressed
     gzip::Decompressor decomp(limit);
     std::string output;
