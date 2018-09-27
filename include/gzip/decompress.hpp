@@ -12,11 +12,11 @@ namespace gzip {
 
 class Decompressor
 {
-    std::size_t max_;
+    std::size_t const max_;
     struct libdeflate_decompressor* decompressor_ = nullptr;
 
   public:
-    Decompressor(std::size_t max_bytes = 1000000000) // by default refuse operation if compressed data is > 1GB
+    Decompressor(std::size_t max_bytes = 2147483648u) // by default refuse operation if required uutput buffer is > 2GB
         : max_(max_bytes)
     {
         decompressor_ = libdeflate_alloc_decompressor();
@@ -36,28 +36,14 @@ class Decompressor
 
     template <typename OutputType>
     void decompress(OutputType& output,
-                    const char* data,
+                    char const* data,
                     std::size_t size) const
     {
-
-#ifdef DEBUG
-        // Verify if size (long type) input will fit into unsigned int, type used for zlib's avail_in
-        std::uint64_t size_64 = size * 2;
-        if (size_64 > std::numeric_limits<unsigned int>::max())
-        {
-            throw std::runtime_error("size arg is too large to fit into unsigned int type x2");
-        }
-#endif
-        if (size > max_ || (size * 2) > max_)
-        {
-            throw std::runtime_error("size may use more memory than intended when decompressing");
-        }
-
         // https://github.com/kaorimatz/libdeflate-ruby/blob/0e33da96cdaad3162f03ec924b25b2f4f2847538/ext/libdeflate/libdeflate_ext.c#L340
         // https://github.com/ebiggers/libdeflate/commit/5a9d25a8922e2d74618fba96e56db4fe145510f4
         std::size_t actual_size;
-        std::size_t uncompressed_size_guess = size * 4;
-        output.reserve(uncompressed_size_guess);
+        std::size_t uncompressed_size_guess = std::min(size * 4, max_);
+        output.resize(uncompressed_size_guess);
         enum libdeflate_result result;
         for (;;)
         {
@@ -65,12 +51,17 @@ class Decompressor
                                                 data,
                                                 size,
                                                 const_cast<char*>(output.data()),
-                                                output.capacity(), &actual_size);
+                                                output.size(), &actual_size);
             if (result != LIBDEFLATE_INSUFFICIENT_SPACE)
             {
                 break;
             }
-            output.reserve((output.capacity() << 1) - output.size());
+            std::size_t new_size = (output.capacity() << 1) - output.size();
+            if (new_size > max_)
+            {
+                throw std::runtime_error("request to resize output buffer exceeded maximum limit");
+            }
+            output.resize(new_size);
         }
 
         if (result == LIBDEFLATE_SHORT_OUTPUT)
