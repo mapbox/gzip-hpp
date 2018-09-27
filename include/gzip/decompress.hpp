@@ -57,17 +57,23 @@ class Decompressor
         // https://github.com/ebiggers/libdeflate/commit/5a9d25a8922e2d74618fba96e56db4fe145510f4
         std::size_t actual_size;
         std::size_t uncompressed_size_guess = size * 4;
-        output.resize(uncompressed_size_guess);
-        enum libdeflate_result result = libdeflate_gzip_decompress(decompressor_,
-                                                                   data,
-                                                                   size,
-                                                                   static_cast<void*>(&output[0]),
-                                                                   uncompressed_size_guess, &actual_size);
-        if (result == LIBDEFLATE_INSUFFICIENT_SPACE)
+        output.reserve(uncompressed_size_guess);
+        enum libdeflate_result result;
+        for (;;)
         {
-            throw std::runtime_error("no space: did not succeed");
+            result = libdeflate_gzip_decompress(decompressor_,
+                                                data,
+                                                size,
+                                                const_cast<char*>(output.data()),
+                                                output.capacity(), &actual_size);
+            if (result != LIBDEFLATE_INSUFFICIENT_SPACE)
+            {
+                break;
+            }
+            output.reserve((output.capacity() << 1) - output.size());
         }
-        else if (result == LIBDEFLATE_SHORT_OUTPUT)
+
+        if (result == LIBDEFLATE_SHORT_OUTPUT)
         {
             throw std::runtime_error("short output: did not succeed");
         }
