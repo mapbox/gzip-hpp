@@ -135,5 +135,5 @@ TEST_CASE("test decompression size limit")
     gzip::Decompressor decomp(limit);
     std::string output;
     CHECK_THROWS(decomp.decompress(output, str_compressed.data(), str_compressed.size()));
-    CHECK(output.size() < limit);
+    CHECK(output.size() <= limit);
 }

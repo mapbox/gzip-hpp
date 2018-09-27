@@ -56,11 +56,11 @@ class Decompressor
             {
                 break;
             }
-            std::size_t new_size = (output.capacity() << 1) - output.size();
-            if (new_size > max_)
+            if (output.size() == max_)
             {
-                throw std::runtime_error("request to resize output buffer exceeded maximum limit");
+                throw std::runtime_error("request to resize output buffer can't exceed maximum limit");
             }
+            std::size_t new_size = std::min((output.capacity() << 1) - output.size(), max_);
             output.resize(new_size);
         }
 
