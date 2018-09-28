@@ -96,3 +96,5 @@ And lastly, mathematically checking for a specific version:
 // use feature provided in v2.0.1
 #endif
 ```
+
+@agius testing whether travis-ci.org is re-enabled & working
