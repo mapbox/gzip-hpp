@@ -37,9 +37,9 @@ class Compressor
         }
     }
 
-    template <typename InputType>
-    void compress(InputType& output,
-                  const char* data,
+    template <typename OutputType>
+    void compress(OutputType& output,
+                  char const* data,
                   std::size_t size) const
     {
 
