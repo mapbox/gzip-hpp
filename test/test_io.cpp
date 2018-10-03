@@ -6,13 +6,9 @@
 TEST_CASE("successful compress")
 {
     std::string data = "hello hello hello hello";
-
-    SECTION("pointer")
-    {
-        const char* pointer = data.data();
-        std::string value = gzip::compress(pointer, data.size());
-        REQUIRE(!value.empty());
-    }
+    const char* pointer = data.data();
+    std::string value = gzip::compress(pointer, data.size());
+    REQUIRE(!value.empty());
 }
 
 TEST_CASE("fail compress - throws max size limit")
