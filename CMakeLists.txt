@@ -35,7 +35,7 @@ include_directories(SYSTEM ${MASON_PACKAGE_catch_INCLUDE_DIRS})
 mason_use(benchmark VERSION 1.3.0)
 include_directories(SYSTEM ${MASON_PACKAGE_benchmark_INCLUDE_DIRS})
 
-mason_use(libdeflate VERSION e9d1014)
+mason_use(libdeflate VERSION 1.0)
 include_directories(SYSTEM ${MASON_PACKAGE_libdeflate_INCLUDE_DIRS})
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
