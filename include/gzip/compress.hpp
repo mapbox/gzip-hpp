@@ -42,14 +42,6 @@ class Compressor
                   char const* data,
                   std::size_t size) const
     {
-
-#ifdef DEBUG
-        // Verify if size input will fit into unsigned int, type used for zlib's avail_in
-        if (size > std::numeric_limits<unsigned int>::max())
-        {
-            throw std::runtime_error("size arg is too large to fit into unsigned int type");
-        }
-#endif
         if (size > max_)
         {
             throw std::runtime_error("size may use more memory than intended when decompressing");
