@@ -14,6 +14,9 @@ class Decompressor
 {
     std::size_t const max_;
     struct libdeflate_decompressor* decompressor_ = nullptr;
+    // make noncopyable
+    Decompressor(Decompressor const&) = delete;
+    Decompressor& operator=(Decompressor const&) = delete;
 
   public:
     Decompressor(std::size_t max_bytes = 2147483648u) // by default refuse operation if required uutput buffer is > 2GB

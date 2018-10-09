@@ -15,6 +15,9 @@ class Compressor
     std::size_t max_;
     int level_;
     struct libdeflate_compressor* compressor_ = nullptr;
+    // make noncopyable
+    Compressor(Compressor const&) = delete;
+    Compressor& operator=(Compressor const&) = delete;
 
   public:
     Compressor(int level = 6,
