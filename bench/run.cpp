@@ -42,69 +42,63 @@ static void BM_decompress(benchmark::State& state) // NOLINT google-runtime-refe
 
 BENCHMARK(BM_decompress);
 
-static void BM_compress_class(benchmark::State& state) // NOLINT google-runtime-references
+static void BM_compress_string(benchmark::State& state) // NOLINT google-runtime-references
 {
     std::string buffer = open_file("./bench/14-4685-6265.mvt");
-    gzip::Compressor comp;
+    for (auto _ : state)
+    {
+        std::string value = gzip::compress(buffer);
+        benchmark::DoNotOptimize(value.data());
+    }
+}
+
+BENCHMARK(BM_compress_string);
+
+static void BM_decompress_string(benchmark::State& state) // NOLINT google-runtime-references
+{
+    std::string buffer_uncompressed = open_file("./bench/14-4685-6265.mvt");
+    std::string buffer = gzip::compress(buffer_uncompressed.data(), buffer_uncompressed.size());
+    for (auto _ : state)
+    {
+        std::string value = gzip::decompress(buffer);
+        benchmark::DoNotOptimize(value.data());
+        benchmark::ClobberMemory();
+    }
+}
+
+BENCHMARK(BM_decompress_string);
+
+static void BM_compress_modify_string(benchmark::State& state) // NOLINT google-runtime-references
+{
+    std::string buffer = open_file("./bench/14-4685-6265.mvt");
 
     for (auto _ : state)
     {
         std::string output;
-        comp.compress(output, buffer.data(), buffer.size());
+        gzip::compress(buffer, output);
+        benchmark::DoNotOptimize(output.data());
+        benchmark::ClobberMemory();
     }
 }
 
-BENCHMARK(BM_compress_class);
+BENCHMARK(BM_compress_modify_string);
 
-static void BM_compress_class_no_reallocations(benchmark::State& state) // NOLINT google-runtime-references
-{
-    std::string buffer = open_file("./bench/14-4685-6265.mvt");
-    gzip::Compressor comp;
-    std::string output;
-    // Run once prior to pre-allocate
-    comp.compress(output, buffer.data(), buffer.size());
-
-    for (auto _ : state)
-    {
-        comp.compress(output, buffer.data(), buffer.size());
-    }
-}
-
-BENCHMARK(BM_compress_class_no_reallocations);
-
-static void BM_decompress_class(benchmark::State& state) // NOLINT google-runtime-references
+static void BM_decompress_modify_string(benchmark::State& state) // NOLINT google-runtime-references
 {
 
     std::string buffer_uncompressed = open_file("./bench/14-4685-6265.mvt");
     std::string buffer = gzip::compress(buffer_uncompressed.data(), buffer_uncompressed.size());
-    gzip::Decompressor decomp;
 
     for (auto _ : state)
     {
         std::string output;
-        decomp.decompress(output, buffer.data(), buffer.size());
+        gzip::decompress(buffer, output);
+        benchmark::DoNotOptimize(output.data());
+        benchmark::ClobberMemory();
     }
 }
 
-BENCHMARK(BM_decompress_class);
-
-static void BM_decompress_class_no_reallocations(benchmark::State& state) // NOLINT google-runtime-references
-{
-
-    std::string buffer_uncompressed = open_file("./bench/14-4685-6265.mvt");
-    std::string buffer = gzip::compress(buffer_uncompressed.data(), buffer_uncompressed.size());
-    gzip::Decompressor decomp;
-    std::string output;
-    // Run once prior to pre-allocate
-    decomp.decompress(output, buffer.data(), buffer.size());
-
-    for (auto _ : state)
-    {
-        decomp.decompress(output, buffer.data(), buffer.size());
-    }
-}
-
-BENCHMARK(BM_decompress_class_no_reallocations);
+BENCHMARK(BM_decompress_modify_string);
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"

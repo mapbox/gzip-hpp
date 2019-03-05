@@ -9,37 +9,33 @@ TEST_CASE("successful compress")
 {
     std::string data = "hello hello hello hello";
 
-    SECTION("pointer")
+    SECTION("data/size")
     {
-        const char* pointer = data.data();
-        std::string value = gzip::compress(pointer, data.size());
+        std::string value = gzip::compress(data.data(), data.size());
         REQUIRE(!value.empty());
     }
+    
+    SECTION("string")
+    {
+        std::string value = gzip::compress(data);
+        REQUIRE(!value.empty());
+    }
+    
+    SECTION("modify string")
+    {   
+        std::string value;
+        gzip::compress(data.data(), data.size(), value);
+        REQUIRE(!value.empty());
+    }
+    
+    SECTION("modify string")
+    {   
+        std::string value;
+        gzip::compress(data, value);
+        REQUIRE(!value.empty());
+    }
+
 }
-
-TEST_CASE("fail compress - throws max size limit")
-{
-    std::string data = "hello hello hello hello";
-    const char* pointer = data.data();
-
-    std::uint64_t l = 2000000001;
-
-    CHECK_THROWS_WITH(gzip::compress(pointer, l), Catch::Contains("size may use more memory than intended when decompressing"));
-}
-
-#ifdef DEBUG
-TEST_CASE("fail compress - pointer, debug throws int overflow")
-{
-    std::string data = "hello hello hello hello";
-    const char* pointer = data.data();
-    // numeric_limit useful for integer conversion
-    unsigned int i = std::numeric_limits<unsigned int>::max();
-    // turn int i into a long, so we can add to it safely without overflow
-    unsigned long l = static_cast<unsigned long>(i) + 1;
-
-    CHECK_THROWS_WITH(gzip::compress(pointer, l), Catch::Contains("size arg is too large to fit into unsigned int type"));
-}
-#endif
 
 TEST_CASE("successful decompress - pointer")
 {
@@ -50,23 +46,6 @@ TEST_CASE("successful decompress - pointer")
     std::string value = gzip::decompress(compressed_pointer, compressed_data.size());
     REQUIRE(data == value);
 }
-
-#ifdef DEBUG
-TEST_CASE("fail decompress - pointer, debug throws int overflow")
-{
-    std::string data = "hello hello hello hello";
-    const char* pointer = data.data();
-    std::string compressed_data = gzip::compress(pointer, data.size());
-    const char* compressed_pointer = compressed_data.data();
-
-    // numeric_limit useful for integer conversion
-    unsigned int i = std::numeric_limits<unsigned int>::max();
-    // turn int i into a long, so we can add to it safely without overflow
-    unsigned long l = static_cast<unsigned long>(i) + 1;
-
-    CHECK_THROWS_WITH(gzip::decompress(compressed_pointer, l), Catch::Contains("size arg is too large to fit into unsigned int type x2"));
-}
-#endif
 
 TEST_CASE("invalid decompression")
 {
@@ -82,6 +61,7 @@ TEST_CASE("round trip compression - gzip")
     const std::string data("this is a sentence that will be compressed into something");
 
     CHECK(!gzip::is_compressed(data.data(), data.size()));
+    CHECK(!gzip::is_compressed(data));
 
     SECTION("compression level - invalid")
     {
@@ -134,8 +114,11 @@ TEST_CASE("test decompression size limit")
 
     std::size_t limit = 20 * 1024 * 1024; // 20 Mb
     // file should be about 500 mb uncompressed
-    gzip::Decompressor decomp(limit);
     std::string output;
-    CHECK_THROWS(decomp.decompress(output, str_compressed.data(), str_compressed.size()));
+    CHECK_THROWS_WITH(gzip::decompress(str_compressed, output, limit), Catch::Contains("size of output string will use more memory then intended when decompressing"));
     CHECK(output.size() < limit);
+    // Check situation where buffer size is larger then limit
+    std::size_t buffer_size = 21 * 1024 * 1024; // 21 Mb
+    std::string output2;
+    CHECK_THROWS_WITH(gzip::decompress(str_compressed, output2, limit, buffer_size), Catch::Contains("buffer size used during decoompression of gzip will use more memory then"));
 }
