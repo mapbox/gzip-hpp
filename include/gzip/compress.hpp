@@ -12,11 +12,12 @@ namespace gzip {
 
 inline void compress(const char* data,
                      std::size_t size,
-                     std::string & output,
+                     std::string& output,
                      int level = Z_DEFAULT_COMPRESSION,
                      std::size_t buffering_size = 0)
 {
-    if (buffering_size == 0) {
+    if (buffering_size == 0)
+    {
         buffering_size = (size / 2) + (size / 4) + 16;
     }
 
@@ -52,13 +53,13 @@ inline void compress(const char* data,
 #pragma GCC diagnostic pop
 
     std::string buffer;
-    do 
+    do
     {
         constexpr std::size_t max_step = static_cast<std::size_t>(std::numeric_limits<unsigned int>::max());
         unsigned int step_size = size > max_step ? max_step : static_cast<unsigned int>(size);
         size -= step_size;
         unsigned int buffer_size = buffering_size > step_size ? step_size : static_cast<unsigned int>(buffering_size);
-        
+
         deflate_s.next_in = reinterpret_cast<z_const Bytef*>(data);
         data = data + step_size;
         deflate_s.avail_in = step_size;
@@ -80,7 +81,7 @@ inline void compress(const char* data,
 }
 
 inline void compress(std::string const& input,
-                     std::string & output,
+                     std::string& output,
                      int level = Z_DEFAULT_COMPRESSION,
                      std::size_t buffering_size = 0)
 {

@@ -1,9 +1,9 @@
 #include <catch.hpp>
 #include <fstream>
-#include <limits>
 #include <gzip/compress.hpp>
 #include <gzip/decompress.hpp>
 #include <gzip/utils.hpp>
+#include <limits>
 
 TEST_CASE("successful compress")
 {
@@ -14,27 +14,26 @@ TEST_CASE("successful compress")
         std::string value = gzip::compress(data.data(), data.size());
         REQUIRE(!value.empty());
     }
-    
+
     SECTION("string")
     {
         std::string value = gzip::compress(data);
         REQUIRE(!value.empty());
     }
-    
+
     SECTION("modify string")
-    {   
+    {
         std::string value;
         gzip::compress(data.data(), data.size(), value);
         REQUIRE(!value.empty());
     }
-    
+
     SECTION("modify string")
-    {   
+    {
         std::string value;
         gzip::compress(data, value);
         REQUIRE(!value.empty());
     }
-
 }
 
 TEST_CASE("successful decompress - pointer")

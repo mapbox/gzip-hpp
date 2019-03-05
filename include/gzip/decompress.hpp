@@ -12,11 +12,12 @@ namespace gzip {
 
 inline void decompress(const char* data,
                        std::size_t size,
-                       std::string & output,
+                       std::string& output,
                        std::size_t max_uncompressed_size = 0,
                        std::size_t buffering_size = 0)
 {
-    if (buffering_size == 0) {
+    if (buffering_size == 0)
+    {
         buffering_size = (size * 2) - (size / 2) + 16;
     }
     z_stream inflate_s;
@@ -36,7 +37,6 @@ inline void decompress(const char* data,
     // (8 to 15) + 32 to automatically detect gzip/zlib header
     constexpr int window_bits = 15 + 32; // auto with windowbits of 15
 
-    
     constexpr unsigned int max_uint = std::numeric_limits<unsigned int>::max();
     unsigned int size_step = buffering_size > max_uint ? max_uint : static_cast<unsigned int>(buffering_size);
     if (max_uncompressed_size != 0 && size_step > max_uncompressed_size)
@@ -76,15 +76,15 @@ inline void decompress(const char* data,
 }
 
 inline void decompress(std::string const& input,
-                       std::string & output,
+                       std::string& output,
                        std::size_t max_uncompressed_size = 0,
                        std::size_t buffering_size = 0)
 {
     return decompress(input.data(), input.size(), output, max_uncompressed_size, buffering_size);
 }
 
-inline std::string decompress(const char * data,
-                              std::size_t size, 
+inline std::string decompress(const char* data,
+                              std::size_t size,
                               std::size_t max_uncompressed_size = 0,
                               std::size_t buffering_size = 0)
 {
@@ -93,7 +93,7 @@ inline std::string decompress(const char * data,
     return output;
 }
 
-inline std::string decompress(std::string const& input, 
+inline std::string decompress(std::string const& input,
                               std::size_t max_uncompressed_size = 0,
                               std::size_t buffering_size = 0)
 {
