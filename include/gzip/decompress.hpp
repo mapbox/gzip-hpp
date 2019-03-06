@@ -38,7 +38,7 @@ inline void decompress(const char* data,
     constexpr int window_bits = 15 + 32; // auto with windowbits of 15
 
     constexpr unsigned int max_uint = std::numeric_limits<unsigned int>::max();
-    unsigned int size_step = buffering_size > max_uint ? max_uint : static_cast<unsigned int>(buffering_size);
+    const unsigned int size_step = buffering_size > max_uint ? max_uint : static_cast<unsigned int>(buffering_size);
     if (max_uncompressed_size != 0 && size_step > max_uncompressed_size)
     {
         throw std::runtime_error("buffer size used during decoompression of gzip will use more memory then allowed, either increase the limit or reduce the buffer size");
@@ -58,7 +58,7 @@ inline void decompress(const char* data,
     {
         inflate_s.avail_out = size_step;
         inflate_s.next_out = reinterpret_cast<Bytef*>(&buffer[0]);
-        int ret = inflate(&inflate_s, Z_FINISH);
+        const int ret = inflate(&inflate_s, Z_FINISH);
         if (ret != Z_STREAM_END && ret != Z_OK && ret != Z_BUF_ERROR)
         {
             std::string error_msg = inflate_s.msg;
@@ -72,7 +72,11 @@ inline void decompress(const char* data,
         }
         output.append(buffer, 0, size_step - inflate_s.avail_out);
     } while (inflate_s.avail_out == 0);
-    inflateEnd(&inflate_s);
+    const int ret2 = inflateEnd(&inflate_s);
+    if (ret2 != Z_OK)
+    {
+        throw std::runtime_error("Unexpected gzip decompression error, state of stream was inconsistent"); 
+    }
 }
 
 inline void decompress(std::string const& input,

@@ -21,14 +21,14 @@ TEST_CASE("successful compress")
         REQUIRE(!value.empty());
     }
 
-    SECTION("modify string")
+    SECTION("data/size and string")
     {
         std::string value;
         gzip::compress(data.data(), data.size(), value);
         REQUIRE(!value.empty());
     }
 
-    SECTION("modify string")
+    SECTION("string and string")
     {
         std::string value;
         gzip::compress(data, value);
@@ -111,13 +111,13 @@ TEST_CASE("test decompression size limit")
                                std::istreambuf_iterator<char>());
     stream.close();
 
-    std::size_t limit = 20 * 1024 * 1024; // 20 Mb
+    const std::size_t limit = 20 * 1024 * 1024; // 20 Mb
     // file should be about 500 mb uncompressed
     std::string output;
     CHECK_THROWS_WITH(gzip::decompress(str_compressed, output, limit), Catch::Contains("size of output string will use more memory then intended when decompressing"));
     CHECK(output.size() < limit);
     // Check situation where buffer size is larger then limit
-    std::size_t buffer_size = 21 * 1024 * 1024; // 21 Mb
+    const std::size_t buffer_size = 21 * 1024 * 1024; // 21 Mb
     std::string output2;
     CHECK_THROWS_WITH(gzip::decompress(str_compressed, output2, limit, buffer_size), Catch::Contains("buffer size used during decoompression of gzip will use more memory then"));
 }

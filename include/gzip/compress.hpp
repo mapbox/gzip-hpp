@@ -18,7 +18,7 @@ inline void compress(const char* data,
 {
     if (buffering_size == 0)
     {
-        buffering_size = (size / 2) + (size / 4) + 16;
+        buffering_size = (size * 3 / 4) + 16;
     }
 
     z_stream deflate_s;
@@ -56,9 +56,9 @@ inline void compress(const char* data,
     do
     {
         constexpr std::size_t max_step = static_cast<std::size_t>(std::numeric_limits<unsigned int>::max());
-        unsigned int step_size = size > max_step ? max_step : static_cast<unsigned int>(size);
+        const unsigned int step_size = size > max_step ? max_step : static_cast<unsigned int>(size);
         size -= step_size;
-        unsigned int buffer_size = buffering_size > step_size ? step_size : static_cast<unsigned int>(buffering_size);
+        const unsigned int buffer_size = buffering_size > step_size ? step_size : static_cast<unsigned int>(buffering_size);
 
         deflate_s.next_in = reinterpret_cast<z_const Bytef*>(data);
         data = data + step_size;
@@ -77,7 +77,11 @@ inline void compress(const char* data,
             output.append(buffer, 0, static_cast<std::size_t>(buffer_size - deflate_s.avail_out));
         } while (deflate_s.avail_out == 0);
     } while (size > 0);
-    deflateEnd(&deflate_s);
+    const int ret = deflateEnd(&deflate_s);
+    if (ret != Z_OK)
+    {
+        throw std::runtime_error("Unexpected gzip compression error, stream was inconsistent or freed prematurely");
+    }
 }
 
 inline void compress(std::string const& input,

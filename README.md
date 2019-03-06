@@ -57,8 +57,8 @@ Buffering size controls the amount of memory allocated as a buffer during compre
 that is 75% of the size of the data provided. A `0` passed to buffer size is the default and forces this 75% calculation.
 
 ```c++
-int level = Z_DEFAULT_COMPRESSION;
-std::size_t buffer_size = 1024; // 1 KB
+const int level = Z_DEFAULT_COMPRESSION;
+const std::size_t buffer_size = 1024; // 1 KB
 
 std::string compressed_data = gzip::compress(data, level, buffer_size);
 ```
@@ -76,8 +76,8 @@ Buffering size controls the amount of memory allocated as a buffer during deccom
 that is 150% of the size of the compressed data provided. A `0` passed to buffer size is the default and forces this 150% calculation.
 
 ```c++
-std::size_t max_decompressed_size = 1024 * 1024 * 1024; // 1 GB
-std::size_t buffer_size = 1024 // 1 kB
+const std::size_t max_decompressed_size = 1024 * 1024 * 1024; // 1 GB
+const std::size_t buffer_size = 1024; // 1 kB
 std::string decompressed_data = gzip::decompress(data, max_decompressed_size, buffer_size);
 ```
 
