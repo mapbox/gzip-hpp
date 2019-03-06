@@ -75,7 +75,7 @@ inline void decompress(const char* data,
     const int ret2 = inflateEnd(&inflate_s);
     if (ret2 != Z_OK)
     {
-        throw std::runtime_error("Unexpected gzip decompression error, state of stream was inconsistent"); 
+        throw std::runtime_error("Unexpected gzip decompression error, state of stream was inconsistent");
     }
 }
 
