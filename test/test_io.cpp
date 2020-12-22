@@ -8,13 +8,9 @@
 TEST_CASE("successful compress")
 {
     std::string data = "hello hello hello hello";
-
-    SECTION("pointer")
-    {
-        const char* pointer = data.data();
-        std::string value = gzip::compress(pointer, data.size());
-        REQUIRE(!value.empty());
-    }
+    const char* pointer = data.data();
+    std::string value = gzip::compress(pointer, data.size());
+    REQUIRE(!value.empty());
 }
 
 TEST_CASE("fail compress - throws max size limit")
@@ -27,20 +23,6 @@ TEST_CASE("fail compress - throws max size limit")
     CHECK_THROWS_WITH(gzip::compress(pointer, l), Catch::Contains("size may use more memory than intended when decompressing"));
 }
 
-#ifdef DEBUG
-TEST_CASE("fail compress - pointer, debug throws int overflow")
-{
-    std::string data = "hello hello hello hello";
-    const char* pointer = data.data();
-    // numeric_limit useful for integer conversion
-    unsigned int i = std::numeric_limits<unsigned int>::max();
-    // turn int i into a long, so we can add to it safely without overflow
-    unsigned long l = static_cast<unsigned long>(i) + 1;
-
-    CHECK_THROWS_WITH(gzip::compress(pointer, l), Catch::Contains("size arg is too large to fit into unsigned int type"));
-}
-#endif
-
 TEST_CASE("successful decompress - pointer")
 {
     std::string data = "hello hello hello hello";
@@ -50,23 +32,6 @@ TEST_CASE("successful decompress - pointer")
     std::string value = gzip::decompress(compressed_pointer, compressed_data.size());
     REQUIRE(data == value);
 }
-
-#ifdef DEBUG
-TEST_CASE("fail decompress - pointer, debug throws int overflow")
-{
-    std::string data = "hello hello hello hello";
-    const char* pointer = data.data();
-    std::string compressed_data = gzip::compress(pointer, data.size());
-    const char* compressed_pointer = compressed_data.data();
-
-    // numeric_limit useful for integer conversion
-    unsigned int i = std::numeric_limits<unsigned int>::max();
-    // turn int i into a long, so we can add to it safely without overflow
-    unsigned long l = static_cast<unsigned long>(i) + 1;
-
-    CHECK_THROWS_WITH(gzip::decompress(compressed_pointer, l), Catch::Contains("size arg is too large to fit into unsigned int type x2"));
-}
-#endif
 
 TEST_CASE("invalid decompression")
 {
@@ -92,7 +57,7 @@ TEST_CASE("round trip compression - gzip")
 
     SECTION("no compression")
     {
-        int level = Z_NO_COMPRESSION;
+        int level = 0;
         std::string compressed_data = gzip::compress(data.data(), data.size());
         CHECK(gzip::is_compressed(compressed_data.data(), compressed_data.size()));
         std::string new_data = gzip::decompress(compressed_data.data(), compressed_data.size());
@@ -101,7 +66,7 @@ TEST_CASE("round trip compression - gzip")
 
     SECTION("default compression level")
     {
-        int level = Z_DEFAULT_COMPRESSION;
+        int level = 6;
         std::string compressed_data = gzip::compress(data.data(), data.size());
         CHECK(gzip::is_compressed(compressed_data.data(), compressed_data.size()));
         std::string new_data = gzip::decompress(compressed_data.data(), compressed_data.size());
@@ -110,7 +75,7 @@ TEST_CASE("round trip compression - gzip")
 
     SECTION("compression level -- min to max")
     {
-        for (int level = Z_BEST_SPEED; level <= Z_BEST_COMPRESSION; ++level)
+        for (int level = 1; level <= 9; ++level)
         {
             std::string compressed_data = gzip::compress(data.data(), data.size());
             CHECK(gzip::is_compressed(compressed_data.data(), compressed_data.size()));
@@ -132,10 +97,10 @@ TEST_CASE("test decompression size limit")
                                std::istreambuf_iterator<char>());
     stream.close();
 
-    std::size_t limit = 20 * 1024 * 1024; // 20 Mb
+    std::size_t limit = 500 * 1024 * 1024; // 500 Mb
     // file should be about 500 mb uncompressed
     gzip::Decompressor decomp(limit);
     std::string output;
     CHECK_THROWS(decomp.decompress(output, str_compressed.data(), str_compressed.size()));
-    CHECK(output.size() < limit);
+    CHECK(output.size() <= limit);
 }
