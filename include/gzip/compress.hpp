@@ -1,3 +1,7 @@
+#ifndef GZIP_HPP_INCLUDE_GZIP_COMPRESS_HPP
+#define GZIP_HPP_INCLUDE_GZIP_COMPRESS_HPP
+
+
 #include <gzip/config.hpp>
 
 // zlib
@@ -111,3 +115,5 @@ inline std::string compress(const char* data,
 }
 
 } // namespace gzip
+
+#endif // GZIP_HPP_INCLUDE_GZIP_COMPRESS_HPP

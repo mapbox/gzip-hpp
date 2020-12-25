@@ -1,3 +1,6 @@
+#ifndef GZIP_HPP_INCLUDE_GZIP_UTILS_HPP
+#define GZIP_HPP_INCLUDE_GZIP_UTILS_HPP
+
 #include <cstdlib>
 
 namespace gzip {
@@ -20,3 +23,5 @@ inline bool is_compressed(const char* data, std::size_t size)
                (static_cast<uint8_t>(data[0]) == 0x1F && static_cast<uint8_t>(data[1]) == 0x8B));
 }
 } // namespace gzip
+
+#endif // GZIP_HPP_INCLUDE_GZIP_UTILS_HPP
