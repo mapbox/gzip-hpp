@@ -1,11 +1,12 @@
 #include <cstdlib>
+#include <string>
 
 namespace gzip {
 
 // These live in gzip.hpp because it doesnt need to use deps.
 // Otherwise, they would need to live in impl files if these methods used
 // zlib structures or functions like inflate/deflate)
-inline bool is_compressed(const char* data, std::size_t size)
+inline bool is_compressed(const char* data, std::size_t size) noexcept
 {
     return size > 2 &&
            (
@@ -19,4 +20,10 @@ inline bool is_compressed(const char* data, std::size_t size)
                // gzip
                (static_cast<uint8_t>(data[0]) == 0x1F && static_cast<uint8_t>(data[1]) == 0x8B));
 }
+
+inline bool is_compressed(std::string const& s) noexcept
+{
+    return is_compressed(s.data(), s.size());
+}
+
 } // namespace gzip

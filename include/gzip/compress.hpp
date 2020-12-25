@@ -10,103 +10,104 @@
 
 namespace gzip {
 
-class Compressor
+inline void compress(const char* data,
+                     std::size_t size,
+                     std::string& output,
+                     int level = Z_DEFAULT_COMPRESSION,
+                     std::size_t buffering_size = 0)
 {
-    std::size_t max_;
-    int level_;
-
-  public:
-    Compressor(int level = Z_DEFAULT_COMPRESSION,
-               std::size_t max_bytes = 2000000000) // by default refuse operation if uncompressed data is > 2GB
-        : max_(max_bytes),
-          level_(level)
+    if (buffering_size == 0)
     {
+        buffering_size = (size * 3 / 4) + 16;
     }
 
-    template <typename InputType>
-    void compress(InputType& output,
-                  const char* data,
-                  std::size_t size) const
-    {
+    z_stream deflate_s;
+    deflate_s.zalloc = Z_NULL;
+    deflate_s.zfree = Z_NULL;
+    deflate_s.opaque = Z_NULL;
+    deflate_s.avail_in = 0;
+    deflate_s.next_in = Z_NULL;
 
-#ifdef DEBUG
-        // Verify if size input will fit into unsigned int, type used for zlib's avail_in
-        if (size > std::numeric_limits<unsigned int>::max())
-        {
-            throw std::runtime_error("size arg is too large to fit into unsigned int type");
-        }
-#endif
-        if (size > max_)
-        {
-            throw std::runtime_error("size may use more memory than intended when decompressing");
-        }
+    // The windowBits parameter is the base two logarithm of the window size (the size of the history buffer).
+    // It should be in the range 8..15 for this version of the library.
+    // Larger values of this parameter result in better compression at the expense of memory usage.
+    // This range of values also changes the decoding type:
+    //  -8 to -15 for raw deflate
+    //  8 to 15 for zlib
+    // (8 to 15) + 16 for gzip
+    // (8 to 15) + 32 to automatically detect gzip/zlib header (decompression/inflate only)
+    constexpr int window_bits = 15 + 16; // gzip with windowbits of 15
 
-        z_stream deflate_s;
-        deflate_s.zalloc = Z_NULL;
-        deflate_s.zfree = Z_NULL;
-        deflate_s.opaque = Z_NULL;
-        deflate_s.avail_in = 0;
-        deflate_s.next_in = Z_NULL;
-
-        // The windowBits parameter is the base two logarithm of the window size (the size of the history buffer).
-        // It should be in the range 8..15 for this version of the library.
-        // Larger values of this parameter result in better compression at the expense of memory usage.
-        // This range of values also changes the decoding type:
-        //  -8 to -15 for raw deflate
-        //  8 to 15 for zlib
-        // (8 to 15) + 16 for gzip
-        // (8 to 15) + 32 to automatically detect gzip/zlib header (decompression/inflate only)
-        constexpr int window_bits = 15 + 16; // gzip with windowbits of 15
-
-        constexpr int mem_level = 8;
-        // The memory requirements for deflate are (in bytes):
-        // (1 << (window_bits+2)) +  (1 << (mem_level+9))
-        // with a default value of 8 for mem_level and our window_bits of 15
-        // this is 128Kb
+    constexpr int mem_level = 8;
+    // The memory requirements for deflate are (in bytes):
+    // (1 << (window_bits+2)) +  (1 << (mem_level+9))
+    // with a default value of 8 for mem_level and our window_bits of 15
+    // this is 128Kb
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
-        if (deflateInit2(&deflate_s, level_, Z_DEFLATED, window_bits, mem_level, Z_DEFAULT_STRATEGY) != Z_OK)
-        {
-            throw std::runtime_error("deflate init failed");
-        }
+    if (deflateInit2(&deflate_s, level, Z_DEFLATED, window_bits, mem_level, Z_DEFAULT_STRATEGY) != Z_OK)
+    {
+        throw std::runtime_error("deflate init failed");
+    }
 #pragma GCC diagnostic pop
 
-        deflate_s.next_in = reinterpret_cast<z_const Bytef*>(data);
-        deflate_s.avail_in = static_cast<unsigned int>(size);
+    std::string buffer;
+    do
+    {
+        constexpr std::size_t max_step = static_cast<std::size_t>(std::numeric_limits<unsigned int>::max());
+        const unsigned int step_size = size > max_step ? max_step : static_cast<unsigned int>(size);
+        size -= step_size;
+        const unsigned int buffer_size = buffering_size > step_size ? step_size : static_cast<unsigned int>(buffering_size);
 
-        std::size_t size_compressed = 0;
+        deflate_s.next_in = reinterpret_cast<z_const Bytef*>(data);
+        data = data + step_size;
+        deflate_s.avail_in = step_size;
+
+        buffer.resize(static_cast<std::size_t>(buffer_size));
         do
         {
-            size_t increase = size / 2 + 1024;
-            if (output.size() < (size_compressed + increase))
-            {
-                output.resize(size_compressed + increase);
-            }
-            // There is no way we see that "increase" would not fit in an unsigned int,
-            // hence we use static cast here to avoid -Wshorten-64-to-32 error
-            deflate_s.avail_out = static_cast<unsigned int>(increase);
-            deflate_s.next_out = reinterpret_cast<Bytef*>((&output[0] + size_compressed));
+            deflate_s.avail_out = buffer_size;
+            deflate_s.next_out = reinterpret_cast<Bytef*>(&buffer[0]);
             // From http://www.zlib.net/zlib_how.html
             // "deflate() has a return value that can indicate errors, yet we do not check it here.
             // Why not? Well, it turns out that deflate() can do no wrong here."
             // Basically only possible error is from deflateInit not working properly
             deflate(&deflate_s, Z_FINISH);
-            size_compressed += (increase - deflate_s.avail_out);
+            output.append(buffer, 0, static_cast<std::size_t>(buffer_size - deflate_s.avail_out));
         } while (deflate_s.avail_out == 0);
-
-        deflateEnd(&deflate_s);
-        output.resize(size_compressed);
+    } while (size > 0);
+    const int ret = deflateEnd(&deflate_s);
+    if (ret != Z_OK)
+    {
+        throw std::runtime_error("Unexpected gzip compression error, stream was inconsistent or freed prematurely");
     }
-};
+}
+
+inline void compress(std::string const& input,
+                     std::string& output,
+                     int level = Z_DEFAULT_COMPRESSION,
+                     std::size_t buffering_size = 0)
+{
+    compress(input.data(), input.size(), output, level, buffering_size);
+}
 
 inline std::string compress(const char* data,
                             std::size_t size,
-                            int level = Z_DEFAULT_COMPRESSION)
+                            int level = Z_DEFAULT_COMPRESSION,
+                            std::size_t buffering_size = 0)
 {
-    Compressor comp(level);
     std::string output;
-    comp.compress(output, data, size);
+    compress(data, size, output, level, buffering_size);
+    return output;
+}
+
+inline std::string compress(std::string const& input,
+                            int level = Z_DEFAULT_COMPRESSION,
+                            std::size_t buffering_size = 0)
+{
+    std::string output;
+    compress(input.data(), input.size(), output, level, buffering_size);
     return output;
 }
 
