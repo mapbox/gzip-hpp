@@ -74,7 +74,7 @@ class Decompressor
             if (resize_to > max_)
             {
                 inflateEnd(&inflate_s);
-                throw std::runtime_error("size of output string will use more memory then intended when decompressing");
+                throw std::runtime_error("size of output string will use more memory than intended when decompressing");
             }
             output.resize(resize_to);
             inflate_s.avail_out = static_cast<unsigned int>(2 * size);
