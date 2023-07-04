@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(hpp_skel LANGUAGES CXX)
+project(gzip-hpp LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED on)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -38,16 +38,21 @@ include_directories(SYSTEM ${MASON_PACKAGE_benchmark_INCLUDE_DIRS})
 mason_use(zlib VERSION 1.2.8)
 include_directories(SYSTEM ${MASON_PACKAGE_zlib_INCLUDE_DIRS})
 
-include_directories("${PROJECT_SOURCE_DIR}/include")
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-file(GLOB TEST_SOURCES test/*.cpp)
-add_executable(unit-tests ${TEST_SOURCES})
+add_library(${PROJECT_NAME} INTERFACE)
+target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# libbenchmark.a supports threads and therefore needs pthread support
-find_package(Threads REQUIRED)
-file(GLOB BENCH_SOURCES bench/*.cpp)
-add_executable(bench-tests ${BENCH_SOURCES})
+if (gzip_BUILD_TESTS)
+    file(GLOB TEST_SOURCES test/*.cpp)
+    add_executable(unit-tests ${TEST_SOURCES})
 
-# link zlib static library to the unit-tests binary so the tests know where to find the zlib impl code
-target_link_libraries(unit-tests ${MASON_PACKAGE_zlib_STATIC_LIBS})
-target_link_libraries(bench-tests ${MASON_PACKAGE_benchmark_STATIC_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${MASON_PACKAGE_zlib_STATIC_LIBS})
+    # libbenchmark.a supports threads and therefore needs pthread support
+    find_package(Threads REQUIRED)
+    file(GLOB BENCH_SOURCES bench/*.cpp)
+    add_executable(bench-tests ${BENCH_SOURCES})
+
+    # link zlib static library to the unit-tests binary so the tests know where to find the zlib impl code
+    target_link_libraries(unit-tests ${MASON_PACKAGE_zlib_STATIC_LIBS})
+    target_link_libraries(bench-tests ${MASON_PACKAGE_benchmark_STATIC_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${MASON_PACKAGE_zlib_STATIC_LIBS})
+endif()
