@@ -1,3 +1,6 @@
+#ifndef GZIP_HPP_INCLUDE_GZIP_DECOMPRESS_HPP
+#define GZIP_HPP_INCLUDE_GZIP_DECOMPRESS_HPP
+
 #include <gzip/config.hpp>
 
 // zlib
@@ -103,3 +106,5 @@ inline std::string decompress(const char* data, std::size_t size)
 }
 
 } // namespace gzip
+
+#endif // GZIP_HPP_INCLUDE_GZIP_DECOMPRESS_HPP
