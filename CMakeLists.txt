@@ -28,22 +28,22 @@ if (WERROR)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
 endif()
 
-# mason_use is a mason function within the mason.cmake file and provides ready-to-go vars, like "STATIC_LIBS" and "INCLUDE_DIRS"
-mason_use(catch VERSION 1.9.6 HEADER_ONLY)
-include_directories(SYSTEM ${MASON_PACKAGE_catch_INCLUDE_DIRS})
-
-mason_use(benchmark VERSION 1.3.0)
-include_directories(SYSTEM ${MASON_PACKAGE_benchmark_INCLUDE_DIRS})
-
-mason_use(zlib VERSION 1.2.8)
-include_directories(SYSTEM ${MASON_PACKAGE_zlib_INCLUDE_DIRS})
-
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 if (gzip_BUILD_TESTS)
+    # mason_use is a mason function within the mason.cmake file and provides ready-to-go vars, like "STATIC_LIBS" and "INCLUDE_DIRS"
+    mason_use(catch VERSION 1.9.6 HEADER_ONLY)
+    include_directories(SYSTEM ${MASON_PACKAGE_catch_INCLUDE_DIRS})
+
+    mason_use(benchmark VERSION 1.3.0)
+    include_directories(SYSTEM ${MASON_PACKAGE_benchmark_INCLUDE_DIRS})
+
+    mason_use(zlib VERSION 1.2.8)
+    include_directories(SYSTEM ${MASON_PACKAGE_zlib_INCLUDE_DIRS})
+
     file(GLOB TEST_SOURCES test/*.cpp)
     add_executable(unit-tests ${TEST_SOURCES})
 
